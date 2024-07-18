@@ -240,7 +240,7 @@ This Django project implements a REST API for managing restaurants, users, order
 
 ## Password Reset Using Django Views and Templates
 
-### 1. Request Password Reset
+### 16. Request Password Reset
 
 - **URL:** `/password-reset/`
 - **Method:** POST
@@ -273,7 +273,7 @@ This Django project implements a REST API for managing restaurants, users, order
   }
   ```
 
-### 2. Password Reset Confirmation
+### 17. Password Reset Confirmation
 
 - **URL:** `/password-reset-confirm/<uidb64>/<token>/`
 - **Method:** 
@@ -313,5 +313,15 @@ This Django project implements a REST API for managing restaurants, users, order
     or specific password validation errors.
 
 ---
+#### 18. **Contact**
+- **URL:** `/contact/`
+- **Method:** POST
+- **Description:** Allows users to authenticate.
+- **Parameters:**
+  - `name` (string, required)
+  - `email` (string, required)
+  - `message` (string, required)
+- **Response:** Returns JSON with message "Message successfully sent"
+
 
 This updated documentation covers the endpoints, request parameters, response formats, and example usage for each API endpoint in your Django REST API project. Make sure to replace `<your_access_token>` placeholders with actual access tokens in your implementation. If you need further adjustments or have more questions, feel free to ask!
