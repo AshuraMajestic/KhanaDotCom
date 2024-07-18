@@ -390,7 +390,7 @@ class Coupon(models.Model):
 #     is_update = models.IntegerField(blank=True, null=True)
 
 #     class Meta:
-#         managed = True
+#         managed = False
 #         db_table = "sms_logs"
 
 
