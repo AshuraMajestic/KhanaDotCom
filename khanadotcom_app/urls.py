@@ -29,8 +29,8 @@ urlpatterns = [
     ),
     path(
         "order/<str:order_id>/",
-        views.order_confirmation_api,
-        name="order_confirmation_api",
+        views.confirm_order,
+        name="confirm_order",
     ),
     path("order/history/", views.order_history_api, name="order_history_api"),
     # Password reset paths
@@ -40,5 +40,5 @@ urlpatterns = [
         views.password_reset_confirm,
         name="password_reset_confirm",
     ),
-    path("contact/", views.contact_us, name="contact_us"),
+    # path("contact/", views.contact_us, name="contact_us"),
 ]

@@ -708,6 +708,7 @@ def order_placement_api(request, restaurant_id):
             amount=total_amount,
             payment_status="pending",  # Adjust based on actual payment flow
         )
+        # notify_restaurant_owner(order)
 
         # Return JSON response with order confirmation details
         return Response(
@@ -727,18 +728,37 @@ def order_placement_api(request, restaurant_id):
 
 
 @permission_classes([IsAuthenticated])
-@api_view(["GET"])
-def order_confirmation_api(request, order_id):
-    order = get_object_or_404(Order, order_id=order_id)
+@api_view(["POST"])
+def confirm_order(request, order_id):
+    user = request.user
 
-    # Prepare data to return in the response
-    order_data = {
-        "order_id": order.order_id,
-        "total_amount": order.total_amount,
-        "order_date": order.order_date.strftime("%Y-%m-%d %H:%M:%S"),
-    }
+    # Check if the user is a restaurant owner
+    if user.user_type != "restaurant_owner":
+        return Response(
+            {"error": "Only restaurant owners can confirm or reject orders."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
-    return Response(order_data)
+    # Get the order object
+    order = get_object_or_404(Order, pk=order_id)
+    status_update = request.data.get("status")
+
+    if status_update not in ["confirmed", "rejected"]:
+        return Response(
+            {
+                "error": "Invalid status. Status should be either 'confirmed' or 'rejected'."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Update the order status
+    order.status = status_update
+    order.save()
+
+    return Response(
+        {"success": f"Order has been {status_update}."},
+        status=status.HTTP_200_OK,
+    )
 
 
 # Order placement api Ends
@@ -754,6 +774,3 @@ def order_history_api(request):
     serializer = OrderSerializer(orders, many=True)
 
     return Response(serializer.data)
-
-
-# order placemenet and validation ends

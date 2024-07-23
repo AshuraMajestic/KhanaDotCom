@@ -154,13 +154,14 @@ This Django project implements a REST API for managing restaurants, users, order
 
 #### 10. **Order Confirmation**
 - **URL:** `/order/<order_id>/`
-- **Method:** GET
-- **Description:** Retrieves details of a specific order.
+- **Method:** POST
+- **Description:** Accept or reject a order by Restaurant owner.
 - **Authorization:** Bearer Token (required)
   - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Parameters:**
-  - `order_id` (integer, required)
-- **Response:** Returns JSON with order id, total amount, and order date.
+  - `order_id` (integer, required) in url
+  - `status` (string,required)
+- **Response:** Returns JSON with successfull acceptance or rejection message.
 
 #### 11. **Order History**
 - **URL:** `/orders/history/`
