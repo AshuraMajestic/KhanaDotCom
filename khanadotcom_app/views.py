@@ -634,7 +634,7 @@ def contact_us(request):
             contact_message = ContactMessage(name=name, email=email, message=message)
             contact_message.save()
 
-            return JsonResponse({message: "Your message is sent"})
+            return JsonResponse({"message": "Your message is sent"})
 
         except json.JSONDecodeError:
             return JsonResponse(
