@@ -159,7 +159,7 @@ This Django project implements a REST API for managing restaurants, users, order
 - **Authorization:** Bearer Token (required)
   - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Parameters:**
-  - `order_id` (integer, required) in url
+  - `order_id` (string, required) in url
   - `status` (string,required)
 - **Response:** Returns JSON with successfull acceptance or rejection message.
 
@@ -170,8 +170,18 @@ This Django project implements a REST API for managing restaurants, users, order
 - **Authorization:** Bearer Token (required)
   - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Parameters:**
-  - `order_id` (integer, required) in url
+  - `order_id` (string, required) in url
 - **Response:** Returns JSON with order id and status
+
+#### 10 C. **Start Preparing Order**
+- **URL:** `order/<str:order_id>/prepare/`
+- **Method:** POST
+- **Description:** Start Preparing order and change status
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+- **Parameters:**
+  - `order_id` (string, required) in url
+- **Response:** Returns JSON with message or error
 
 #### 11. **Order History**
 - **URL:** `/orders/history/`

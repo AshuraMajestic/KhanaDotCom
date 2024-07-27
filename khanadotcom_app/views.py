@@ -799,3 +799,30 @@ def get_order_status_api(request, order_id):
             {"error": f"Internal Server Error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+@permission_classes([IsAuthenticated])
+@api_view(["PUT"])
+def update_order_status_to_preparing(request, order_id):
+    try:
+        user = request.user
+
+        # Check if the user is a restaurant owner
+        if user.user_type != "restaurant_owner":
+            return Response(
+                {"error": "Only restaurant owners can Start preparing the dish."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        order = get_object_or_404(Order, pk=order_id)
+        order.status = "Preparing"
+        order.save()
+        return Response(
+            {"message": "Order status updated to Preparing."}, status=status.HTTP_200_OK
+        )
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response(
+            {"error": f"Internal Server Error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

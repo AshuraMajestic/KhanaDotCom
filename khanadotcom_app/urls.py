@@ -37,6 +37,11 @@ urlpatterns = [
         views.get_order_status_api,
         name="get_order_status_api",
     ),
+    path(
+        "order/<str:order_id>/prepare/",
+        views.update_order_status_to_preparing,
+        name="update_order_status_to_preparing",
+    ),
     path("order/history/", views.order_history_api, name="order_history_api"),
     # Password reset paths
     path("password-reset/", views.request_password_reset, name="password_reset"),
