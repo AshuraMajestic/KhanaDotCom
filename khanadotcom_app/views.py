@@ -780,3 +780,22 @@ def order_history_api(request):
     serializer = OrderSerializer(orders, many=True)
 
     return Response(serializer.data)
+
+
+@permission_classes([IsAuthenticated])
+@api_view(["GET"])
+def get_order_status_api(request, order_id):
+    try:
+        order = get_object_or_404(Order, pk=order_id)
+        order_status = {
+            "order_id": order.id,
+            "status": order.status,
+        }
+        return Response(order_status, status=status.HTTP_200_OK)
+    except Order.DoesNotExist:
+        return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response(
+            {"error": f"Internal Server Error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

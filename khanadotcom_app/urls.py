@@ -32,6 +32,11 @@ urlpatterns = [
         views.confirm_order,
         name="confirm_order",
     ),
+    path(
+        "order/status/<str:order_id>/",
+        views.get_order_status_api,
+        name="get_order_status_api",
+    ),
     path("order/history/", views.order_history_api, name="order_history_api"),
     # Password reset paths
     path("password-reset/", views.request_password_reset, name="password_reset"),
