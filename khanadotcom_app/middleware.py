@@ -17,9 +17,8 @@ class TokenMiddleware:
             "/delete-user/",
             "/token/",
             "/activate/",
-            "/password_reset/",
-            "/password_reset_confirm/",
-            "/request_password_reset/",
+            "/password-reset/",
+            "/password-reset-confirm/",
             "/contact/",
         ]
         if any(request.path.startswith(path) for path in admin_paths):
