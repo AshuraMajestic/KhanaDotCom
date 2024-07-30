@@ -758,7 +758,11 @@ def confirm_order(request, order_id):
         )
 
     # Update the order status
-    order.status = status_update
+    order.order_status = status_update
+    if status_update == "rejected":
+        order.order_status = "cancelled"
+        order.is_deleted = True
+
     order.save()
 
     return Response(
@@ -825,4 +829,25 @@ def update_order_status_to_preparing(request, order_id):
         return Response(
             {"error": f"Internal Server Error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+def assign_order_to_delivery_person(request, order_id):
+    order = get_object_or_404(Order, order_id=order_id)
+    if order.order_status == "confirmed":
+        success = order.assign_delivery_person()
+        if success:
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "message": "Delivery person assigned successfully.",
+                }
+            )
+        else:
+            return JsonResponse(
+                {"status": "error", "message": "No available delivery person."}
+            )
+    else:
+        return JsonResponse(
+            {"status": "error", "message": "Order is not in confirmed status."}
         )

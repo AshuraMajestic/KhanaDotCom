@@ -186,13 +186,31 @@ class Order(models.Model):
         max_length=20, choices=ORDER_STATUS_CHOICES, default="pending"
     )
     delivery_address = models.TextField()
+
     order_date = models.DateTimeField(auto_now_add=True)
     delivery_date = models.DateTimeField(blank=True, null=True)
+    delivery_person = models.ForeignKey(
+        "DeliveryPerson", on_delete=models.SET_NULL, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Order {self.order_id} for {self.user.name}"
+
+    def assign_delivery_person(self):
+        available_delivery_person = DeliveryPerson.objects.filter(
+            availability_status=True
+        ).first()
+        if available_delivery_person:
+            self.delivery_person = available_delivery_person
+            self.order_status = "out_for_delivery"
+            available_delivery_person.availability_status = False
+            available_delivery_person.save()
+            self.save()
+            return True
+        else:
+            return False
 
     class Meta:
         db_table = "order"
