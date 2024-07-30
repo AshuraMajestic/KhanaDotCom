@@ -43,8 +43,8 @@ urlpatterns = [
         name="update_order_status_to_preparing",
     ),
     path(
-        "order/<str:order_id>/assign/",
-        views.assign_order,
+        "assign_order/<str:order_id>/",
+        views.assign_order_to_delivery_person,
         name="assign_order",
     ),
     path("order/history/", views.order_history_api, name="order_history_api"),
