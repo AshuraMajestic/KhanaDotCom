@@ -28,22 +28,22 @@ urlpatterns = [
         name="order_placement_api",
     ),
     path(
-        "order/<str:order_id>/",
+        "order/<int:order_id>/",
         views.confirm_order,
         name="confirm_order",
     ),
     path(
-        "order/status/<str:order_id>/",
+        "order/status/<int:order_id>/",
         views.get_order_status_api,
         name="get_order_status_api",
     ),
     path(
-        "order/<str:order_id>/prepare/",
+        "order/<int:order_id>/prepare/",
         views.update_order_status_to_preparing,
         name="update_order_status_to_preparing",
     ),
     path(
-        "assign_order/<str:order_id>/",
+        "assign_order/<int:order_id>/",
         views.assign_order_to_delivery_person,
         name="assign_order",
     ),

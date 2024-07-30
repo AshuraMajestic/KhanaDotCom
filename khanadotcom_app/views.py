@@ -163,29 +163,6 @@ def signup_api(request):
 
 @csrf_exempt
 @api_view(["POST"])
-def generate_token(request):
-    email = request.data.get("email")
-    password = request.data.get("password")
-    try:
-        # Authenticate the user
-        user = authenticate(email=email, password=password)
-        if user is not None:
-            # Generate tokens for the user
-            refresh = RefreshToken.for_user(user)
-            access_token = refresh.access_token
-            token_data = {"refresh": str(refresh), "access": str(access_token)}
-            return Response(token_data, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {"error": "Invalid email or password."},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-    except Exception as e:
-        return Response({"error": "Token Expired"}, status=status.HTTP_401_UNAUTHORIZED)
-
-
-@csrf_exempt
-@api_view(["POST"])
 def login_api(request):
     if request.method == "POST":
         username = request.data.get("email")
@@ -288,6 +265,29 @@ def send_activation_email(request, user):
         raise  # Raise the exception to propagate it if needed
 
 
+@csrf_exempt
+@api_view(["POST"])
+def generate_token(request):
+    email = request.data.get("email")
+    password = request.data.get("password")
+    try:
+        # Authenticate the user
+        user = authenticate(email=email, password=password)
+        if user is not None:
+            # Generate tokens for the user
+            refresh = RefreshToken.for_user(user)
+            access_token = refresh.access_token
+            token_data = {"refresh": str(refresh), "access": str(access_token)}
+            return Response(token_data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "Invalid email or password."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+    except Exception as e:
+        return Response({"error": "Token Expired"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
 # authentication ends
 
 
@@ -384,6 +384,123 @@ def menu_items_api(request, restaurant_id):
 
 # Basic api ends
 
+
+# Update Api Starts
+
+
+@permission_classes([IsAuthenticated])
+@api_view(["POST"])
+def update_profile(request):
+    user = request.user  # Get the logged-in user instance
+
+    if request.method == "POST":
+        try:
+            data = request.data  # Use request.data to handle JSON payload
+
+            # Update user fields if provided and not empty
+            if "name" in data and data["name"].strip():
+                user.name = data["name"].strip()
+            if "phone_number" in data and data["phone_number"].strip():
+                user.phone_number = data["phone_number"].strip()
+            if "address" in data and data["address"].strip():
+                user.address = data["address"].strip()
+
+            # Save the updated user object
+            user.save()
+
+            # Check user type and update related model if applicable
+            if user.user_type == "customer":
+                customer_detail, created = CustomerDetail.objects.get_or_create(
+                    user=user
+                )
+                if "date_of_birth" in data and data["date_of_birth"].strip():
+                    customer_detail.date_of_birth = data["date_of_birth"].strip()
+                customer_detail.save()
+
+            elif user.user_type == "delivery_person":
+                delivery_person, created = DeliveryPerson.objects.get_or_create(
+                    user=user
+                )
+                if "vehicle_details" in data and data["vehicle_details"].strip():
+                    delivery_person.vehicle_details = data["vehicle_details"].strip()
+                delivery_person.save()
+
+            # Prepare success response
+            response_data = {
+                "message": "Your profile has been updated!",
+                "user_id": user.user_id,
+                "name": user.name,
+                "phone_number": user.phone_number,
+                "address": user.address,
+                # Add more fields as needed
+            }
+
+            return JsonResponse(response_data)
+
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"error": "Invalid JSON format."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        except ValueError as e:
+            return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return JsonResponse(
+                {"error": "Internal Server Error: " + str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    else:
+        return JsonResponse(
+            {"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+
+
+# Update Api Ends
+
+# Delete api  Starts
+
+
+@api_view(["DELETE"])
+def delete_user_api(request, user_id):
+    try:
+        user = get_object_or_404(User, user_id=user_id)
+
+        # Soft delete the user
+        user.is_deleted = True
+        user.save()
+
+        # Soft delete specific table data based on user type
+        if user.user_type == "restaurant_owner":
+            restaurant_owner = get_object_or_404(RestaurantOwner, user=user)
+            restaurant_owner.is_deleted = True
+            restaurant_owner.save()
+        elif user.user_type == "delivery_person":
+            delivery_person = get_object_or_404(DeliveryPerson, user=user)
+            delivery_person.is_deleted = True
+            delivery_person.save()
+        elif user.user_type == "customer":
+            customer_detail = get_object_or_404(CustomerDetail, user=user)
+            customer_detail.is_deleted = True
+            customer_detail.save()
+
+        return Response(
+            {"success": "User and associated data soft deleted successfully."},
+            status=status.HTTP_200_OK,
+        )
+
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response(
+            {"error": f"Failed to soft delete user: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+# Delete api  Ends
 
 #  reset password api start
 
@@ -483,141 +600,6 @@ def password_reset_confirm(request, uidb64, token):
 
 
 # reset password api ends
-
-
-# Update Api Starts
-
-
-@permission_classes([IsAuthenticated])
-@api_view(["POST"])
-def update_profile(request):
-    user = request.user  # Get the logged-in user instance
-
-    if request.method == "POST":
-        try:
-            data = request.data  # Use request.data to handle JSON payload
-
-            # Update user fields if provided and not empty
-            if "name" in data and data["name"].strip():
-                user.name = data["name"].strip()
-            if "phone_number" in data and data["phone_number"].strip():
-                user.phone_number = data["phone_number"].strip()
-            if "address" in data and data["address"].strip():
-                user.address = data["address"].strip()
-            if "profile_picture" in request.FILES:
-                user.profile_picture = request.FILES["profile_picture"]
-
-            # Save the updated user object
-            user.save()
-
-            # Check user type and update related model if applicable
-            if user.user_type == "customer":
-                customer_detail, created = CustomerDetail.objects.get_or_create(
-                    user=user
-                )
-                if "date_of_birth" in data and data["date_of_birth"].strip():
-                    customer_detail.date_of_birth = data["date_of_birth"].strip()
-                customer_detail.save()
-            elif user.user_type == "restaurant_owner":
-                restaurant_owner, created = RestaurantOwner.objects.get_or_create(
-                    user=user
-                )
-                if (
-                    "aadhaar_card_number" in data
-                    and data["aadhaar_card_number"].strip()
-                ):
-                    restaurant_owner.aadhaar_card_number = data[
-                        "aadhaar_card_number"
-                    ].strip()
-                restaurant_owner.save()
-            elif user.user_type == "delivery_person":
-                delivery_person, created = DeliveryPerson.objects.get_or_create(
-                    user=user
-                )
-                if "vehicle_details" in data and data["vehicle_details"].strip():
-                    delivery_person.vehicle_details = data["vehicle_details"].strip()
-                delivery_person.save()
-
-            # Prepare success response
-            response_data = {
-                "message": "Your profile has been updated!",
-                "user_id": user.user_id,
-                "name": user.name,
-                "phone_number": user.phone_number,
-                "address": user.address,
-                "profile_picture": (
-                    user.profile_picture.url if user.profile_picture else None
-                ),
-                # Add more fields as needed
-            }
-
-            return JsonResponse(response_data)
-
-        except json.JSONDecodeError:
-            return JsonResponse(
-                {"error": "Invalid JSON format."}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        except ValueError as e:
-            return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            return JsonResponse(
-                {"error": "Internal Server Error: " + str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-    else:
-        return JsonResponse(
-            {"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED
-        )
-
-
-# Update Api Ends
-
-# Delete api  Starts
-
-
-@api_view(["DELETE"])
-def delete_user_api(request, user_id):
-    try:
-        user = get_object_or_404(User, user_id=user_id)
-
-        # Soft delete the user
-        user.is_deleted = True
-        user.save()
-
-        # Soft delete specific table data based on user type
-        if user.user_type == "restaurant_owner":
-            restaurant_owner = get_object_or_404(RestaurantOwner, user=user)
-            restaurant_owner.is_deleted = True
-            restaurant_owner.save()
-        elif user.user_type == "delivery_person":
-            delivery_person = get_object_or_404(DeliveryPerson, user=user)
-            delivery_person.is_deleted = True
-            delivery_person.save()
-        elif user.user_type == "customer":
-            customer_detail = get_object_or_404(CustomerDetail, user=user)
-            customer_detail.is_deleted = True
-            customer_detail.save()
-
-        return Response(
-            {"success": "User and associated data soft deleted successfully."},
-            status=status.HTTP_200_OK,
-        )
-
-    except User.DoesNotExist:
-        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-
-    except Exception as e:
-        return Response(
-            {"error": f"Failed to soft delete user: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-
-
-# Delete api  Ends
-
 
 # contact us start
 
@@ -776,18 +758,6 @@ def confirm_order(request, order_id):
 
 @permission_classes([IsAuthenticated])
 @api_view(["GET"])
-def order_history_api(request):
-    # Fetch orders for the current user (assuming user is authenticated)
-    orders = Order.objects.filter(user=request.user).order_by("-order_date")
-
-    # Serialize queryset into JSON data
-    serializer = OrderSerializer(orders, many=True)
-
-    return Response(serializer.data)
-
-
-@permission_classes([IsAuthenticated])
-@api_view(["GET"])
 def get_order_status_api(request, order_id):
     try:
         order = get_object_or_404(Order, pk=order_id)
@@ -851,3 +821,15 @@ def assign_order_to_delivery_person(request, order_id):
         return JsonResponse(
             {"status": "error", "message": "Order is not in confirmed status."}
         )
+
+
+@permission_classes([IsAuthenticated])
+@api_view(["GET"])
+def order_history_api(request):
+    # Fetch orders for the current user (assuming user is authenticated)
+    orders = Order.objects.filter(user=request.user).order_by("-order_date")
+
+    # Serialize queryset into JSON data
+    serializer = OrderSerializer(orders, many=True)
+
+    return Response(serializer.data)

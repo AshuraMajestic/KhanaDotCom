@@ -121,7 +121,7 @@ This Django project implements a REST API for managing restaurants, users, order
   - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Parameters:**
   - `restaurant_id` (integer, required)
-- **Response:** Returns JSON object with restaurant id, name, description, and other relevant details.
+- **Response:** Returns JSON object with restaurant id, name, description and image.
 
 #### 8. **Menu Items**
 - **URL:** `/menu/<restaurant_id>/`
@@ -131,137 +131,60 @@ This Django project implements a REST API for managing restaurants, users, order
   - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Parameters:**
   - `restaurant_id` (integer, required)
-- **Response:** Returns JSON array of menu item objects with id, name, and price.
+- **Response:** Returns JSON array of menu item objects with id, name,description,image and price.
 
-### Order Management
-
-#### 9. **Place Order**
-- **URL:** `/order/place/<restaurant_id>/`
-- **Method:** POST
-- **Description:** Allows placing an order at a specific restaurant.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Parameters:**
-  - `restaurant_id` (integer, required)
-- **Request Body:**
-  ```json
-  {
-      "delivery_address": "string",
-      "items": [item_id1, item_id2, ...]
-  }
-  ```
-- **Response:** Returns JSON with order details including order id and total amount.
-
-#### 10. **Order Confirmation**
-- **URL:** `/order/<order_id>/`
-- **Method:** POST
-- **Description:** Accept or reject a order by Restaurant owner.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Parameters:**
-  - `order_id` (string, required) in url
-  - `status` (string,required)
-- **Response:** Returns JSON with successfull acceptance or rejection message.
-
-#### 10 B. **Order Status**
-- **URL:** `order/status/<str:order_id>/`
-- **Method:** GET
-- **Description:** Get Status of Order
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Parameters:**
-  - `order_id` (string, required) in url
-- **Response:** Returns JSON with order id and status
-
-#### 10 C. **Start Preparing Order**
-- **URL:** `order/<str:order_id>/prepare/`
-- **Method:** POST
-- **Description:** Start Preparing order and change status
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Parameters:**
-  - `order_id` (string, required) in url
-- **Response:** Returns JSON with message or error
-
-#### 11. **Order History**
-- **URL:** `/orders/history/`
-- **Method:** GET
-- **Description:** Retrieves order history for the currently authenticated user.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Response:** Returns JSON array of order objects with order id, total amount, and order date.
 
 ### Update User Details
 
-#### 12. **Update Customer Details**
-- **URL:** `/update/customer/`
-- **Method:** PUT
-- **Description:** Updates details of the currently authenticated customer.
+#### 9. **Update Details**
+- **URL:** `/update-profile/`
+- **Method:** POST
+- **Description:** Updates details of the currently authenticated customer,Restaurantr owner or delivery person.
 - **Authorization:** Bearer Token (required)
   - Example: `'Authorization':'Bearer <your_access_token>'`
+
 - **Request Body:**
+  If customer
+
   ```json
   {
+    "name":"raju",
     "phone_number": "9876543210",
     "address": "New Address",
-    "date_of_birth": "1995-05-15"
+    "date-of-birth": "1990-01-01"
+  }
+  ```
+
+  If restaurant owner
+  ```json
+  {
+    "name":"raju",
+    "phone_number": "9876543210",
+    "address": "New Address",
+  }
+  ```
+
+  If delivery person
+  ```json
+  {
+    "name":"raju",
+    "phone_number": "9876543210",
+    "address": "New Address",
+    "vehicle_details":"Bike"
   }
   ```
 - **Response:** Returns updated customer details if successful, or error messages.
 
-#### 13. **Update Restaurant Owner Details**
-- **URL:** `/update/restaurant_owner/`
-- **Method:** PUT
-- **Description:** Updates details of the currently authenticated restaurant owner.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Request Body:**
-  ```json
-  {
-    "phone_number": "9876543210",
-    "address": "New Address",
-    "aadhaar_number": "1234 5678 9101"
-  }
-  ```
-- **Response:** Returns updated restaurant owner details if successful, or error messages.
-
-#### 14. **Update Delivery Person Details**
-- **URL:** `/update/delivery_person/`
-- **Method:** PUT
-- **Description:** Updates details of the currently authenticated delivery person.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Request Body:**
-  ```json
-  {
-    "phone_number": "9876543210",
-    "address": "New Address",
-    "vehicle_details": "Car"
-  }
-  ```
-- **Response:** Returns updated delivery person details if successful, or error messages.
-
-### Update Restaurant Details
-
-#### 15. **Update Restaurant Details**
-- **URL:** `/update/restaurant/<restaurant_id>/`
-- **Method:** PUT
-- **Description:** Updates details of a specific restaurant identified by `restaurant_id`.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Request Body:**
-  ```json
-  {
-    "name": "New Restaurant Name",
-    "description": "New Description",
-    "location": "New Location"
-  }
-  ```
-- **Response:** Returns updated restaurant details if successful, or error messages.
+#### 10. **Delete User**
+- **URL:** `/delete-user/<int:user_id>/`
+- **Method:** DELETE
+- **Description:** Soft Delete the user in database
+- **Request Parameters:** Need User id in the url
+- **Response:** Returns Success or error
 
 ## Password Reset Using Django Views and Templates
 
-### 16. Request Password Reset
+### 11. Request Password Reset
 
 - **URL:** `/password-reset/`
 - **Method:** POST
@@ -294,47 +217,8 @@ This Django project implements a REST API for managing restaurants, users, order
   }
   ```
 
-### 17. Password Reset Confirmation
 
-- **URL:** `/password-reset-confirm/<uidb64>/<token>/`
-- **Method:** 
-  - GET: Renders the password reset form if the token is valid.
-  - POST: Resets the user's password using the provided new password.
-
-#### GET Method (Rendering Password Reset Form)
-- **URL Example:** `/password-reset-confirm/MTE=/5r5-1a48f07a7c746bfecf94/`
-
-#### POST Method (Reset Password)
-- **URL Example:** `/password-reset-confirm/MTE=/5r5-1a48f07a7c746bfecf94/`
-- **Request Body**
-  ```json
-  {
-      "new_password": "newpassword123"
-  }
-  ```
-
-#### Responses
-- **GET Method:**
-  - **Success Response:** Renders the password reset form.
-  - **Error Response:** HTTP 404 Not Found if the token is invalid or expired.
-
-- **POST Method:**
-  - **Success Response:** HTTP 200 OK
-    ```json
-    {
-        "message": "Password reset successfully."
-    }
-    ```
-  - **Error Response:** HTTP 400 Bad Request
-    ```json
-    {
-        "error": "New password is required."
-    }
-    ```
-    or specific password validation errors.
-
----
-#### 18. **Contact**
+#### 12. **Contact**
 - **URL:** `/contact/`
 - **Method:** POST
 - **Description:** Allows users to authenticate.
@@ -344,5 +228,107 @@ This Django project implements a REST API for managing restaurants, users, order
   - `message` (string, required)
 - **Response:** Returns JSON with message "Message successfully sent"
 
+### Order Management
 
-This updated documentation covers the endpoints, request parameters, response formats, and example usage for each API endpoint in your Django REST API project. Make sure to replace `<your_access_token>` placeholders with actual access tokens in your implementation. If you need further adjustments or have more questions, feel free to ask!
+#### 13. **Place Order**
+- **URL:** `restaurants/<int:restaurant_id>/order/`
+- **Method:** POST
+- **Description:** Allows placing an order at a specific restaurant.
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+- **Parameters:**
+  - `restaurant_id` (integer, required)
+- **Request Body:**
+  ```json
+  {
+      "delivery_address": "string",
+      "items": [item_id1, item_id2, ...]
+  }
+  ```
+- **Response:** Returns JSON with order details including order id and total amount.
+
+#### 14. **Order Confirmation**
+- **URL:** `/order/<order_id>/`
+- **Method:** POST
+- **Description:** Accept or reject a order by Restaurant owner.
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+- **Parameters:**
+  - `order_id` (string, required) in url
+  - `status` (string,required)
+- **Response:** Returns JSON with successfull acceptance or rejection message.
+
+#### 15. **Order Status**
+- **URL:** `order/status/<str:order_id>/`
+- **Method:** GET
+- **Description:** Get Status of Order
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+- **Parameters:**
+  - `order_id` (string, required) in url
+- **Response:** Returns JSON with order id and status
+
+#### 16. **Start Preparing Order**
+- **URL:** `order/<str:order_id>/prepare/`
+- **Method:** POST
+- **Description:** Start Preparing order and change status
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+- **Parameters:**
+  - `order_id` (string, required) in url
+- **Response:** Returns JSON with message or error
+
+#### 17. **Assign Order to Delivery Person**
+- **URL:** `assign_order/<int:order_id>/`
+- **Method:** POST
+- **Description:** Assign a delivery person to a confirmed order.
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+- **Parameters:**
+  - `order_id` (string, required) in URL
+- **Response:** Returns JSON with status and message.
+
+**Request Example:**
+```http
+POST /order/<order_id>/assign_delivery/
+Authorization: Bearer <your_access_token>
+```
+
+**Response Examples:**
+
+- **Success Response:**
+  ```json
+  {
+    "status": "success",
+    "message": "Delivery person assigned successfully."
+  }
+  ```
+
+- **Error Response (Order not in confirmed status):**
+  ```json
+  {
+    "status": "error",
+    "message": "Order is not in confirmed status."
+  }
+  ```
+
+- **Error Response (No available delivery person):**
+  ```json
+  {
+    "status": "error",
+    "message": "No available delivery person."
+  }
+  ```
+
+
+
+#### 18. **Order History**
+- **URL:** `/orders/history/`
+- **Method:** GET
+- **Description:** Retrieves order history for the currently authenticated user.
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+- **Response:** Returns JSON array of order objects with order id, total amount, and order date.
+
+
+T Make sure to replace `<your_access_token>` placeholders with actual access tokens in your implementation. If you need further adjustments or have more questions, feel free to ask!
