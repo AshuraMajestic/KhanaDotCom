@@ -96,16 +96,6 @@ WSGI_APPLICATION = "khanadotcom_project.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": "khana",
-#         "USER": "admin",
-#         "PASSWORD": "admin2235098",
-#         "HOST": "khanadotcom.cl8eu6weoxrd.ap-south-1.rds.amazonaws.com",
-#         "PORT": "3306",
-#     },
-# }
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
