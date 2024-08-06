@@ -342,14 +342,15 @@ def user_profile_api(request):
 def restaurant_list_api(request):
     restaurants = Restaurant.objects.all()
     data = [
-        {
-            "id": restaurant.restaurant_id,
-            "name": restaurant.name,
-            "image": restaurant.profile_pic,
-        }
-        for restaurant in restaurants
-    ]
+            {
+                "id": restaurant.restaurant_id,
+                "name": restaurant.name,
+                "image": restaurant.profile_pic.url,
+            }
+            for restaurant in restaurants
+        ]
     return Response(data)
+
 
 
 @permission_classes([IsAuthenticated])
@@ -360,7 +361,7 @@ def restaurant_detail_api(request, restaurant_id):
         "id": restaurant.restaurant_id,
         "name": restaurant.name,
         "description": restaurant.description,
-        "image": restaurant.profile_pic,
+        "image": restaurant.profile_pic.url,
     }
     return Response(data)
 
@@ -375,7 +376,7 @@ def menu_items_api(request, restaurant_id):
             "name": item.name,
             "price": item.price,
             "description": item.description,
-            "image": item.menu_item_pic,
+            "image": item.menu_item_pic.url,
         }
         for item in menu_items
     ]
