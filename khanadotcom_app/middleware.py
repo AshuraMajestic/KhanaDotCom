@@ -20,6 +20,7 @@ class TokenMiddleware:
             "/password-reset/",
             "/password-reset-confirm/",
             "/contact/",
+            "/media/"
         ]
         if any(request.path.startswith(path) for path in admin_paths):
             return self.get_response(request)
