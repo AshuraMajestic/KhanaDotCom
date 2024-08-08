@@ -296,9 +296,9 @@ def generate_token(request):
 
 @permission_classes([IsAuthenticated])
 @api_view(["GET"])
-def user_profile_api(request):
+def owner_profile_api(request):
     user = request.user
-
+    
     # Base user data
     data = {
         "user_id": user.user_id,
@@ -309,30 +309,57 @@ def user_profile_api(request):
         "phone_number": user.phone_number,
         "address": user.address,
     }
-
-    # Additional user type-specific data
-    if user.user_type == "restaurant_owner":
-        restaurant_owner = get_object_or_404(RestaurantOwner, user=user)
-        data.update(
+    restaurant_owner = get_object_or_404(RestaurantOwner, user=user)
+    data.update(
             {
                 "aadhaar_card_number": restaurant_owner.aadhaar_card_number,
             }
         )
-    elif user.user_type == "delivery_person":
-        delivery_person = get_object_or_404(DeliveryPerson, user=user)
-        data.update(
+
+    return Response(data, status=status.HTTP_200_OK)
+
+@permission_classes([IsAuthenticated])
+@api_view(["GET"])
+def delivery_person_profile_api(request):
+    user = request.user
+    
+    # Base user data
+    data = {
+        "user_id": user.user_id,
+        "username": user.username,
+        "email": user.email,
+        "user_type": user.user_type,
+        "name": user.name,
+        "phone_number": user.phone_number,
+        "address": user.address,
+    }
+    delivery_person = get_object_or_404(DeliveryPerson, user=user)
+    data.update(
             {
                 "aadhaar_card_number": delivery_person.aadhaar_card_number,
                 "vehicle_details": delivery_person.vehicle_details,
+                "availability_status":delivery_person.availability_status,
+                "rating":delivery_person.rating,
             }
         )
-    elif user.user_type == "customer":
-        customer_detail = get_object_or_404(CustomerDetail, user=user)
-        data.update(
-            {
-                "date_of_birth": customer_detail.date_of_birth,
-            }
-        )
+
+    return Response(data, status=status.HTTP_200_OK)
+
+@permission_classes([IsAuthenticated])
+@api_view(["GET"])
+def user_profile_api(request):
+    user = request.user
+    
+    # Base user data
+    data = {
+        "user_id": user.user_id,
+        "username": user.username,
+        "email": user.email,
+        "user_type": user.user_type,
+        "name": user.name,
+        "phone_number": user.phone_number,
+        "address": user.address,
+    }
 
     return Response(data, status=status.HTTP_200_OK)
 
@@ -390,74 +417,89 @@ def menu_items_api(request, restaurant_id):
 
 
 @permission_classes([IsAuthenticated])
-@api_view(["POST"])
-def update_profile(request):
-    user = request.user  # Get the logged-in user instance
+@api_view(["PUT"])
+def update_owner_profile_api(request):
+    user = request.user
+    restaurant_owner = get_object_or_404(RestaurantOwner, user=user)
 
-    if request.method == "POST":
-        try:
-            data = request.data  # Use request.data to handle JSON payload
-
-            # Update user fields if provided and not empty
-            if "name" in data and data["name"].strip():
-                user.name = data["name"].strip()
-            if "phone_number" in data and data["phone_number"].strip():
-                user.phone_number = data["phone_number"].strip()
-            if "address" in data and data["address"].strip():
-                user.address = data["address"].strip()
-
-            # Save the updated user object
-            user.save()
-
-            # Check user type and update related model if applicable
-            if user.user_type == "customer":
-                customer_detail, created = CustomerDetail.objects.get_or_create(
-                    user=user
-                )
-                if "date_of_birth" in data and data["date_of_birth"].strip():
-                    customer_detail.date_of_birth = data["date_of_birth"].strip()
-                customer_detail.save()
-
-            elif user.user_type == "delivery_person":
-                delivery_person, created = DeliveryPerson.objects.get_or_create(
-                    user=user
-                )
-                if "vehicle_details" in data and data["vehicle_details"].strip():
-                    delivery_person.vehicle_details = data["vehicle_details"].strip()
-                delivery_person.save()
-
-            # Prepare success response
-            response_data = {
-                "message": "Your profile has been updated!",
-                "user_id": user.user_id,
-                "name": user.name,
-                "phone_number": user.phone_number,
-                "address": user.address,
-                # Add more fields as needed
-            }
-
-            return JsonResponse(response_data)
-
-        except json.JSONDecodeError:
-            return JsonResponse(
-                {"error": "Invalid JSON format."}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        except ValueError as e:
-            return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            return JsonResponse(
-                {"error": "Internal Server Error: " + str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-    else:
-        return JsonResponse(
-            {"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED
-        )
+    # Update base user data
+    user_data = {
+        "username": request.data.get("username", user.username),
+        "email": user.email,
+        "name": request.data.get("name", user.name),
+        "phone_number": request.data.get("phone_number", user.phone_number),
+        "address": request.data.get("address", user.address),
+    }
+    owner_data = {
+        "aadhaar_card_number":  restaurant_owner.aadhaar_card_number,
+    }
 
 
+
+    # Update user and owner information
+    for attr, value in user_data.items():
+        setattr(user, attr, value)
+    user.save()
+    for attr, value in owner_data.items():
+        setattr(restaurant_owner, attr, value)
+    restaurant_owner.save()
+
+    return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
+
+@permission_classes([IsAuthenticated])
+@api_view(["PUT"])
+def update_delivery_person_profile_api(request):
+    user = request.user
+    delivery_person = get_object_or_404(DeliveryPerson, user=user)
+
+    # Update base user data
+    user_data = {
+        "username": request.data.get("username", user.username),
+        "email": user.email,
+        "name": request.data.get("name", user.name),
+        "phone_number": request.data.get("phone_number", user.phone_number),
+        "address": request.data.get("address", user.address),
+    }
+
+    # Update additional delivery person-specific data
+    delivery_person_data = {
+        "aadhaar_card_number": delivery_person.aadhaar_card_number,
+        "vehicle_details": request.data.get("vehicle_details", delivery_person.vehicle_details),
+        "availability_status": request.data.get("availability_status", delivery_person.availability_status),
+         "rating":delivery_person.rating,
+    }
+
+    # Update user and delivery person information
+    for attr, value in user_data.items():
+        setattr(user, attr, value)
+    user.save()
+
+    for attr, value in delivery_person_data.items():
+        setattr(delivery_person, attr, value)
+    delivery_person.save()
+
+    return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
+
+@permission_classes([IsAuthenticated])
+@api_view(["PUT"])
+def update_user_profile_api(request):
+    user = request.user
+
+    # Update base user data
+    user_data = {
+        "username": request.data.get("username", user.username),
+        "email": user.email,
+        "name": request.data.get("name", user.name),
+        "phone_number": request.data.get("phone_number", user.phone_number),
+        "address": request.data.get("address", user.address),
+    }
+
+    # Update user information
+    for attr, value in user_data.items():
+        setattr(user, attr, value)
+    user.save()
+
+    return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
 # Update Api Ends
 
 # Delete api  Starts

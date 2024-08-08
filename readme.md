@@ -93,15 +93,81 @@ This Django project implements a REST API for managing restaurants, users, order
   - `password` (string, required)
 - **Response:** Returns JSON with access token and refresh token.
 
-### User Profile
+### 5. User Profile
 
-#### 5. **User Profile**
-- **URL:** `/profile/`
-- **Method:** GET
+To enhance the design and organization of the user profile APIs, you can introduce a more consistent and modular structure. Below is the improved design for the API endpoints, including detailed information about the endpoints, request format, and expected responses.
+
+### i. **User Profile API**
+
+- **URL:** `/profile-user/`
+- **Method:** `GET`
 - **Description:** Retrieves the profile information of the currently authenticated user.
 - **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
-- **Response:** Returns JSON with username, email, user type, phone number, address, and other relevant details.
+  - **Header Example:** `'Authorization': 'Bearer <your_access_token>'`
+- **Response:**
+  - **Status:** `200 OK`
+  - **Content-Type:** `application/json`
+  - **Body Example:**
+    ```json
+    {
+      "username": "john_doe",
+      "email": "john@example.com",
+      "user_type": "user",
+      "name": "John Doe",
+      "phone_number": "+1234567890",
+      "address": "123 Main St, Springfield"
+    }
+    ```
+
+### ii. **Owner Profile API**
+
+- **URL:** `/profile-owner/`
+- **Method:** `GET`
+- **Description:** Retrieves the profile information of the currently authenticated restaurant owner.
+- **Authorization:** Bearer Token (required)
+  - **Header Example:** `'Authorization': 'Bearer <your_access_token>'`
+- **Response:**
+  - **Status:** `200 OK`
+  - **Content-Type:** `application/json`
+  - **Body Example:**
+    ```json
+    {
+      "username": "owner_jane",
+      "email": "jane@example.com",
+      "user_type": "owner",
+      "name": "Jane Smith",
+      "phone_number": "+1234567890",
+      "address": "456 Elm St, Springfield",
+      "aadhaar_card_number": "1234-5678-9012"
+    }
+    ```
+
+### iii. **Delivery Person Profile API**
+
+- **URL:** `/profile-delivery-person/`
+- **Method:** `GET`
+- **Description:** Retrieves the profile information of the currently authenticated delivery person.
+- **Authorization:** Bearer Token (required)
+  - **Header Example:** `'Authorization': 'Bearer <your_access_token>'`
+- **Response:**
+  - **Status:** `200 OK`
+  - **Content-Type:** `application/json`
+  - **Body Example:**
+    ```json
+    {
+      "username": "delivery_jake",
+      "email": "jake@example.com",
+      "user_type": "delivery_person",
+      "name": "Jake Doe",
+      "phone_number": "+1234567890",
+      "address": "789 Oak St, Springfield",
+      "aadhaar_card_number": "5678-1234-9012",
+      "vehicle_details": "Bike - XYZ123",
+      "availability_status": "Available",
+      "rating": 4.8
+    }
+    ```
+
 
 ### Restaurant Management
 
@@ -136,44 +202,86 @@ This Django project implements a REST API for managing restaurants, users, order
 
 ### Update User Details
 
-#### 9. **Update Details**
-- **URL:** `/update-profile/`
-- **Method:** POST
-- **Description:** Updates details of the currently authenticated customer,Restaurantr owner or delivery person.
+#### 9. **Update Details User**
+- **URL:** `/update-profile-user/`
+- **Method:** PUT
+- **Description:** Updates details of the currently authenticated customer
 - **Authorization:** Bearer Token (required)
   - Example: `'Authorization':'Bearer <your_access_token>'`
 
 - **Request Body:**
-  If customer
 
   ```json
   {
-    "name":"raju",
-    "phone_number": "9876543210",
-    "address": "New Address",
-    "date-of-birth": "1990-01-01"
+   "username": "username",
+        "name": "name",
+        "phone_number": "1234567890",
+        "address": "address",
   }
   ```
 
-  If restaurant owner
+- **Response:** Returns Update successful message, or error messages.
+
+#### 10. **Update Details Owner**
+- **URL:** `/update-profile-owner/`
+- **Method:** PUT
+- **Description:** Updates details of the currently authenticated owner
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+
+- **Request Body:**
+
   ```json
   {
-    "name":"raju",
-    "phone_number": "9876543210",
-    "address": "New Address",
+        "username": "username",
+        "name": "name",
+        "phone_number": "1234567890",
+        "address": "address",
   }
   ```
 
-  If delivery person
+- **Response:** Returns Update successful message, or error messages.
+
+#### 11. **Update Details Delivery Person**
+- **URL:** `/update-profile-delivery-person/`
+- **Method:** PUT
+- **Description:** Updates details of the currently authenticated customer
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+
+- **Request Body:**
+
   ```json
   {
-    "name":"raju",
-    "phone_number": "9876543210",
-    "address": "New Address",
-    "vehicle_details":"Bike"
+        "username": "username",
+        "name": "name",
+        "phone_number": "1234567890",
+        "address": "address",
+        "vehicle_details": "GJ181234",
+        "availability_status": True,
   }
   ```
-- **Response:** Returns updated customer details if successful, or error messages.
+
+- **Response:** Returns Update successful message, or error messages.
+#### 9. **Update Details User**
+- **URL:** `/update-profile-user/`
+- **Method:** PUT
+- **Description:** Updates details of the currently authenticated customer
+- **Authorization:** Bearer Token (required)
+  - Example: `'Authorization':'Bearer <your_access_token>'`
+
+- **Request Body:**
+
+  ```json
+  {
+   "username": "username",
+        "name": "name",
+        "phone_number": "1234567890",
+        "address": "address",
+  }
+  ```
+
+- **Response:** Returns Update successful message, or error messages.
 
 #### 10. **Delete User**
 - **URL:** `/delete-user/<int:user_id>/`
