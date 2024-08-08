@@ -124,7 +124,7 @@ This Django project implements a REST API for managing restaurants, users, order
 - **Response:** Returns JSON object with restaurant id, name, description and image.
 
 #### 8. **Menu Items**
-- **URL:** `/menu/<restaurant_id>/`
+- **URL:** `/restaurants/<restaurant_id>/menu/`
 - **Method:** GET
 - **Description:** Retrieves menu items for a specific restaurant.
 - **Authorization:** Bearer Token (required)
