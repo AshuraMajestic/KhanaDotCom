@@ -79,7 +79,7 @@ This Django project implements a REST API for managing restaurants, users, order
 #### 3. **Logout**
 - **URL:** `/logout/`
 - **Method:** POST
-- **Description:** Logs out the currently authenticated user.
+- **Description:** Logs out the currently authenticated user.Also remove the jwt token from the local database
 - **Authorization:** Bearer Token (required)
   - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Response:** Returns JSON with success message.
