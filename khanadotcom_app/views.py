@@ -161,6 +161,9 @@ def signup_api(request):
         return JsonResponse({"error": "Method not allowed."}, status=405)
 
 
+from datetime import datetime
+from rest_framework_simplejwt.tokens import AccessToken
+
 @csrf_exempt
 @api_view(["POST"])
 def login_api(request):
@@ -168,20 +171,42 @@ def login_api(request):
         username = request.data.get("email")
         password = request.data.get("password")
 
+        # Authenticate the user
         user = authenticate(username=username, password=password)
         if user is not None:
             # Reset failed login attempts on successful login
             FailedLoginAttempt.objects.filter(user=user).delete()
             login(request, user)
 
-            return Response({"success": "Login successful."})
+            # Check if the existing token is valid
+            if user.access_token:
+                try:
+                    # Decode the token to check its validity
+                    access_token = AccessToken(user.access_token)
+                    if access_token['exp'] > datetime.now().timestamp():
+                        return Response({"success": "Login successful.", "access_token": user.access_token})
+                except Exception as e:
+                    # Token is invalid, so generate a new one
+                    pass
+
+            # If token is not valid or not present, generate a new one
+            try:
+                refresh = RefreshToken.for_user(user)
+                access_token = refresh.access_token
+
+                # Save the access token to the user's record
+                user.access_token = str(access_token)
+                user.save()
+
+                return Response({"success": "Login successful.", "access_token": str(access_token)})
+            except Exception as e:
+                return Response({"error": "Error generating token: " + str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+
         else:
             # Handle failed login attempts
             user = User.objects.filter(email=username).first()
             if user:
-                failed_attempt, created = FailedLoginAttempt.objects.get_or_create(
-                    user=user
-                )
+                failed_attempt, created = FailedLoginAttempt.objects.get_or_create(user=user)
                 failed_attempt.attempt_count += 1
                 failed_attempt.timestamp = timezone.now()
                 failed_attempt.save()
@@ -189,9 +214,7 @@ def login_api(request):
                 if failed_attempt.attempt_count >= 5:
                     send_password_reset_email(request, user)
                     return Response(
-                        {
-                            "error": "Too many failed login attempts. Password reset email has been sent."
-                        },
+                        {"error": "Too many failed login attempts. Password reset email has been sent."},
                         status=status.HTTP_403_FORBIDDEN,
                     )
 
@@ -265,27 +288,27 @@ def send_activation_email(request, user):
         raise  # Raise the exception to propagate it if needed
 
 
-@csrf_exempt
-@api_view(["POST"])
-def generate_token(request):
-    email = request.data.get("email")
-    password = request.data.get("password")
-    try:
-        # Authenticate the user
-        user = authenticate(email=email, password=password)
-        if user is not None:
-            # Generate tokens for the user
-            refresh = RefreshToken.for_user(user)
-            access_token = refresh.access_token
-            token_data = {"refresh": str(refresh), "access": str(access_token)}
-            return Response(token_data, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {"error": "Invalid email or password."},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-    except Exception as e:
-        return Response({"error": "Token Expired"}, status=status.HTTP_401_UNAUTHORIZED)
+# @csrf_exempt
+# @api_view(["POST"])
+# def generate_token(request):
+#     email = request.data.get("email")
+#     password = request.data.get("password")
+#     try:
+#         # Authenticate the user
+#         user = authenticate(email=email, password=password)
+#         if user is not None:
+#             # Generate tokens for the user
+#             refresh = RefreshToken.for_user(user)
+#             access_token = refresh.access_token
+#             token_data = {"refresh": str(refresh), "access": str(access_token)}
+#             return Response(token_data, status=status.HTTP_200_OK)
+#         else:
+#             return Response(
+#                 {"error": "Invalid email or password."},
+#                 status=status.HTTP_401_UNAUTHORIZED,
+#             )
+#     except Exception as e:
+#         return Response({"error": "Token Expired"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 # authentication ends

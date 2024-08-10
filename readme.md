@@ -74,7 +74,7 @@ This Django project implements a REST API for managing restaurants, users, order
 - **Parameters:**
   - `email` (string, required)
   - `password` (string, required)
-- **Response:** Returns JSON with access token and refresh token or error message.
+- **Response:** Returns JSON with access token and sucess message or error message.
 
 #### 3. **Logout**
 - **URL:** `/logout/`
@@ -84,18 +84,8 @@ This Django project implements a REST API for managing restaurants, users, order
   - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Response:** Returns JSON with success message.
 
-#### 4. **Token**
-- **URL:** `/token/`
-- **Method:** POST
-- **Description:** Retrieves the access token and refresh token.
-- **Parameters:**
-  - `email` (string, required)
-  - `password` (string, required)
-- **Response:** Returns JSON with access token and refresh token.
+### 4. User Profile
 
-### 5. User Profile
-
-To enhance the design and organization of the user profile APIs, you can introduce a more consistent and modular structure. Below is the improved design for the API endpoints, including detailed information about the endpoints, request format, and expected responses.
 
 ### i. **User Profile API**
 
@@ -171,7 +161,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
 
 ### Restaurant Management
 
-#### 6. **List Restaurants**
+#### 5. **List Restaurants**
 - **URL:** `/restaurants/`
 - **Method:** GET
 - **Description:** Retrieves a list of all restaurants.
@@ -179,7 +169,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
   - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Response:** Returns JSON array of restaurant objects with id and name.
 
-#### 7. **Restaurant Detail**
+#### 6. **Restaurant Detail**
 - **URL:** `/restaurant/<restaurant_id>/`
 - **Method:** GET
 - **Description:** Retrieves details of a specific restaurant.
@@ -189,7 +179,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
   - `restaurant_id` (integer, required)
 - **Response:** Returns JSON object with restaurant id, name, description and image.
 
-#### 8. **Menu Items**
+#### 7. **Menu Items**
 - **URL:** `/restaurants/<restaurant_id>/menu/`
 - **Method:** GET
 - **Description:** Retrieves menu items for a specific restaurant.
@@ -202,7 +192,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
 
 ### Update User Details
 
-#### 9. **Update Details User**
+#### 8. **Update Details User**
 - **URL:** `/update-profile-user/`
 - **Method:** PUT
 - **Description:** Updates details of the currently authenticated customer
@@ -222,7 +212,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
 
 - **Response:** Returns Update successful message, or error messages.
 
-#### 10. **Update Details Owner**
+#### 9. **Update Details Owner**
 - **URL:** `/update-profile-owner/`
 - **Method:** PUT
 - **Description:** Updates details of the currently authenticated owner
@@ -242,7 +232,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
 
 - **Response:** Returns Update successful message, or error messages.
 
-#### 11. **Update Details Delivery Person**
+#### 10. **Update Details Delivery Person**
 - **URL:** `/update-profile-delivery-person/`
 - **Method:** PUT
 - **Description:** Updates details of the currently authenticated customer
@@ -263,7 +253,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
   ```
 
 - **Response:** Returns Update successful message, or error messages.
-#### 9. **Update Details User**
+#### 11. **Update Details User**
 - **URL:** `/update-profile-user/`
 - **Method:** PUT
 - **Description:** Updates details of the currently authenticated customer
@@ -283,7 +273,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
 
 - **Response:** Returns Update successful message, or error messages.
 
-#### 10. **Delete User**
+#### 12. **Delete User**
 - **URL:** `/delete-user/<int:user_id>/`
 - **Method:** DELETE
 - **Description:** Soft Delete the user in database
@@ -292,7 +282,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
 
 ## Password Reset Using Django Views and Templates
 
-### 11. Request Password Reset
+### 13. Request Password Reset
 
 - **URL:** `/password-reset/`
 - **Method:** POST
@@ -326,7 +316,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
   ```
 
 
-#### 12. **Contact**
+#### 14. **Contact**
 - **URL:** `/contact/`
 - **Method:** POST
 - **Description:** Allows users to authenticate.
@@ -338,7 +328,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
 
 ### Order Management
 
-#### 13. **Place Order**
+#### 15. **Place Order**
 - **URL:** `restaurants/<int:restaurant_id>/order/`
 - **Method:** POST
 - **Description:** Allows placing an order at a specific restaurant.
@@ -355,7 +345,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
   ```
 - **Response:** Returns JSON with order details including order id and total amount.
 
-#### 14. **Order Confirmation**
+#### 16. **Order Confirmation**
 - **URL:** `/order/<order_id>/`
 - **Method:** POST
 - **Description:** Accept or reject a order by Restaurant owner.
@@ -366,7 +356,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
   - `status` (string,required)
 - **Response:** Returns JSON with successfull acceptance or rejection message.
 
-#### 15. **Order Status**
+#### 17. **Order Status**
 - **URL:** `order/status/<str:order_id>/`
 - **Method:** GET
 - **Description:** Get Status of Order
@@ -376,7 +366,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
   - `order_id` (string, required) in url
 - **Response:** Returns JSON with order id and status
 
-#### 16. **Start Preparing Order**
+#### 18. **Start Preparing Order**
 - **URL:** `order/<str:order_id>/prepare/`
 - **Method:** POST
 - **Description:** Start Preparing order and change status
@@ -386,7 +376,7 @@ To enhance the design and organization of the user profile APIs, you can introdu
   - `order_id` (string, required) in url
 - **Response:** Returns JSON with message or error
 
-#### 17. **Assign Order to Delivery Person**
+#### 19. **Assign Order to Delivery Person**
 - **URL:** `assign_order/<int:order_id>/`
 - **Method:** POST
 - **Description:** Assign a delivery person to a confirmed order.
@@ -430,7 +420,7 @@ Authorization: Bearer <your_access_token>
 
 
 
-#### 18. **Order History**
+#### 20. **Order History**
 - **URL:** `/orders/history/`
 - **Method:** GET
 - **Description:** Retrieves order history for the currently authenticated user.
@@ -445,7 +435,7 @@ Sure, I'll include example requests and responses for each API.
 
 ---
 
-#### **19. Add Restaurant API**
+#### **21. Add Restaurant API**
 
 **Endpoint:** `/add-restaurant/`  
 **Method:** `POST`  
@@ -525,7 +515,7 @@ Content-Type: multipart/form-data
 
 ---
 
-#### **20. Add Menu Item API**
+#### **22. Add Menu Item API**
 
 **Endpoint:** `/add-menu-items/`  
 **Method:** `POST`  

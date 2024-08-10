@@ -6,7 +6,6 @@ urlpatterns = [
     path("signup/", views.signup_api, name="signup_api"),
     path("login/", views.login_api, name="login_api"),
     path("logout/", views.logout_api, name="logout_api"),
-    path("token/", views.generate_token, name="generate_token"),
     path("activate/<uidb64>/<str:token>/", views.activate_api, name="activate_api"),
     path("profile-user/", views.user_profile_api, name="user_profile_api"),
     path("profile-owner/", views.owner_profile_api, name="owner_profile_api"),

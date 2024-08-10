@@ -36,6 +36,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15)
     address = models.TextField()
+    access_token=models.TextField(blank=True, null=True)
     user_type = models.CharField(max_length=20, choices=USER_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -56,7 +57,7 @@ class User(AbstractUser):
 
     class Meta:
         db_table = "user"
-        managed = False
+        managed = True
 
 
 class FailedLoginAttempt(models.Model):
