@@ -57,7 +57,7 @@ class User(AbstractUser):
 
     class Meta:
         db_table = "user"
-        managed = True
+        managed = False
 
 
 class FailedLoginAttempt(models.Model):
