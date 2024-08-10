@@ -164,7 +164,7 @@ class MenuItem(models.Model):
 
     class Meta:
         db_table = "menu_item_details"
-        managed = True
+        managed = False
 
 
 class Order(models.Model):
