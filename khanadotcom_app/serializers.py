@@ -6,6 +6,7 @@ from .models import (
     RestaurantOwner,
     DeliveryPerson,
     Restaurant,
+    MenuItem
 )
 
 
@@ -55,4 +56,9 @@ class DeliveryPersonSerializer(serializers.ModelSerializer):
 class RestaurantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
-        fields = "__all__"
+        fields = '__all__'
+        
+class MenuItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItem
+        fields = ['menu_item_id', 'restaurant', 'name', 'description', 'price', 'menu_item_pic', 'availability', 'rating', 'preparation_time']

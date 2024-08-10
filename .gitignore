@@ -13,5 +13,4 @@ khanadotcom_app/templates/success.html
 khanadotcom_app/templates/restaurant_detail.html
 khanadotcom_app/templates/restaurant_related.html
 khanadotcom_app/templates/reset_password.html
-media/menu_items
-media/profile_pictures
+media

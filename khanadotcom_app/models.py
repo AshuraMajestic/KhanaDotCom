@@ -110,7 +110,7 @@ class Restaurant(models.Model):
         upload_to="restaurant_logo/", null=True, blank=True
     )
     description = models.TextField(blank=True, null=True)
-    rating = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=2,default=0.00, blank=True, null=True)
     restaurant_GST = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -154,7 +154,7 @@ class MenuItem(models.Model):
     availability = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    rating = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=2,default=0.00, blank=True, null=True)
     preparation_time = models.IntegerField(
         help_text="Preparation time in minutes", blank=True, null=True
     )
@@ -164,7 +164,7 @@ class MenuItem(models.Model):
 
     class Meta:
         db_table = "menu_item_details"
-        managed = False
+        managed = True
 
 
 class Order(models.Model):

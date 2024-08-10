@@ -876,3 +876,105 @@ def order_history_api(request):
     serializer = OrderSerializer(orders, many=True)
 
     return Response(serializer.data)
+
+
+
+@permission_classes([IsAuthenticated])
+@api_view(["POST"])
+def add_restaurant_api(request):
+    user = request.user
+    if request.method == 'POST':
+        try:
+            # Check if the user is a restaurant owner
+            if user.user_type != "restaurant_owner":
+                return JsonResponse(
+                    {"error": "Only restaurant owners can add a restaurant."},
+                    status=403,
+                )
+
+            data = request.data
+            name = data.get('name')
+            address = data.get('address')
+            phone_number = data.get('phone_number')
+            email = data.get('email')
+            description = data.get('description')
+            restaurant_GST = data.get('restaurant_GST')
+            profile_pic = request.FILES.get('profile_pic')
+
+            # Validate required fields
+            if not all([name, address, phone_number, email, description, restaurant_GST]):
+                return JsonResponse({'error': 'All fields are required.'}, status=400)
+
+            # Ensure the restaurant owner's profile exists
+            try:
+                owner = RestaurantOwner.objects.get(user=user)
+                owner = get_object_or_404(RestaurantOwner, restaurant_owner_id=9)
+                
+            except RestaurantOwner.DoesNotExist:
+                return JsonResponse({'error': 'Restaurant owner profile not found.'}, status=404)
+
+            # Create restaurant
+            restaurant = Restaurant.objects.create(
+                owner=owner,
+                name=name,
+                address=address,
+                phone_number=phone_number,
+                email=email,
+                description=description,
+                restaurant_GST=restaurant_GST,
+            )
+
+            # Handle profile picture if provided
+            if profile_pic:
+                ext = profile_pic.name.split('.')[-1]
+                new_image_name = f'{restaurant.restaurant_id}.{ext}'
+                profile_pic.name = new_image_name
+                restaurant.profile_pic.save(new_image_name, profile_pic)
+
+            return JsonResponse({'success': 'Restaurant created successfully.', 'restaurant_id': restaurant.restaurant_id}, status=201)
+
+        except Exception as e:
+            return JsonResponse({'error': f'Error: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'error': 'Method not allowed.'}, status=405)
+    
+    
+@permission_classes([IsAuthenticated])
+@api_view(["POST"])
+def add_menu_item_api(request):
+    user = request.user
+    if request.method == 'POST':
+        data = request.data
+        name = data.get('name')
+        description = data.get('description')
+        price = data.get('price')
+        preparation_time = data.get('preparation_time')
+        menu_item_pic = request.FILES.get('menu_item_pic')
+        restaurant_id = data.get('restaurant_id')
+        if not all([name, description, price, preparation_time,restaurant_id]):
+                return JsonResponse({'error': 'All fields are required.'}, status=400)
+        try:
+            restaurant = get_object_or_404(Restaurant, restaurant_id=restaurant_id)
+            if restaurant.owner.user != user:
+                return JsonResponse({'error': 'You are not authorized to add items to this restaurant.'}, status=403)
+            
+            menu = MenuItem.objects.create(
+                restaurant=restaurant,
+                name=name,
+                description=description,
+                price=price,
+                preparation_time=preparation_time
+            )
+            if menu_item_pic:
+                ext = menu_item_pic.name.split('.')[-1]
+                new_image_name = f'{menu.menu_item_id}.{ext}'
+                menu_item_pic.name = new_image_name
+                menu.menu_item_pic.save(new_image_name, menu_item_pic)
+                
+            return JsonResponse({'success': 'Menu Item created successfully.', 'menu_item_id': menu.menu_item_id}, status=201)
+            
+        except Exception as e:
+            return JsonResponse({'error': f'Error: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'error': 'Method not allowed.'}, status=405)
+# Adding ends for Owner
