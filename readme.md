@@ -439,4 +439,159 @@ Authorization: Bearer <your_access_token>
 - **Response:** Returns JSON array of order objects with order id, total amount, and order date.
 
 
+Sure, I'll include example requests and responses for each API.
+
+### API Documentation with Examples
+
+---
+
+#### **19. Add Restaurant API**
+
+**Endpoint:** `/add-restaurant/`  
+**Method:** `POST`  
+**Permissions Required:** Authentication (Only accessible to authenticated restaurnant owner)  
+
+**Description:**  
+This API endpoint allows restaurant owners to add a new restaurant to the system. It requires the user to be authenticated and have a user type of "restaurant_owner."
+
+**Request Parameters:**
+
+- **name** (string): The name of the restaurant. (Required)
+- **address** (string): The address of the restaurant. (Required)
+- **phone_number** (string): The phone number of the restaurant. (Required)
+- **email** (string): The email address of the restaurant. (Required)
+- **description** (string): A description of the restaurant. (Required)
+- **restaurant_GST** (string): The GST number of the restaurant. (Required)
+- **profile_pic** (file): An optional profile picture of the restaurant.
+
+**Example Request:**
+
+```http
+POST /api/add-restaurant/
+Authorization: Bearer <your_token>
+Content-Type: multipart/form-data
+
+{
+  "name": "The Gourmet Bistro",
+  "address": "123 Foodie Lane, Flavor Town",
+  "phone_number": "+1234567890",
+  "email": "contact@gourmetbistro.com",
+  "description": "A bistro offering a wide range of gourmet dishes.",
+  "restaurant_GST": "12ABCDE3456F7Z8",
+  "profile_pic": (file: gourmet_bistro.jpg)
+}
+```
+
+**Example Response (Success):**
+
+```json
+{
+  "success": "Restaurant created successfully.",
+  "restaurant_id": 1
+}
+```
+
+**Example Response (Error - Missing Field):**
+
+```json
+{
+  "error": "All fields are required."
+}
+```
+
+**Example Response (Error - Unauthorized):**
+
+```json
+{
+  "error": "Only restaurant owners can add a restaurant."
+}
+```
+
+**Example Response (Error - Owner Profile Not Found):**
+
+```json
+{
+  "error": "Restaurant owner profile not found."
+}
+```
+
+**Example Response (Error - Server Issue):**
+
+```json
+{
+  "error": "Error: Description of the error"
+}
+```
+
+---
+
+#### **20. Add Menu Item API**
+
+**Endpoint:** `/add-menu-items/`  
+**Method:** `POST`  
+**Permissions Required:** Authentication (Only accessible to authenticated users)  
+
+**Description:**  
+This API endpoint allows authenticated restaurant owners to add a new menu item to their restaurant. It ensures that the user is the owner of the restaurant before allowing the addition of a menu item.
+
+**Request Parameters:**
+
+- **name** (string): The name of the menu item. (Required)
+- **description** (string): A description of the menu item. (Required)
+- **price** (decimal): The price of the menu item. (Required)
+- **preparation_time** (string): The preparation time for the menu item. (Required)
+- **menu_item_pic** (file): An optional picture of the menu item.
+- **restaurant_id** (integer): The ID of the restaurant where the menu item will be added. (Required)
+
+**Example Request:**
+
+```http
+POST /api/add-menu-item/
+Authorization: Bearer <your_token>
+Content-Type: multipart/form-data
+
+{
+  "name": "Truffle Risotto",
+  "description": "Creamy risotto with truffle oil and mushrooms.",
+  "price": 19.99,
+  "preparation_time": "20 minutes",
+  "menu_item_pic": (file: truffle_risotto.jpg),
+  "restaurant_id": 1
+}
+```
+
+**Example Response (Success):**
+
+```json
+{
+  "success": "Menu Item created successfully.",
+  "menu_item_id": 101
+}
+```
+
+**Example Response (Error - Missing Field):**
+
+```json
+{
+  "error": "All fields are required."
+}
+```
+
+**Example Response (Error - Unauthorized):**
+
+```json
+{
+  "error": "You are not authorized to add items to this restaurant."
+}
+```
+
+**Example Response (Error - Server Issue):**
+
+```json
+{
+  "error": "Error: Description of the error"
+}
+```
+
+
 T Make sure to replace `<your_access_token>` placeholders with actual access tokens in your implementation. If you need further adjustments or have more questions, feel free to ask!
