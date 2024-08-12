@@ -184,7 +184,7 @@ def login_api(request):
                     # Decode the token to check its validity
                     access_token = AccessToken(user.access_token)
                     if access_token['exp'] > datetime.now().timestamp():
-                        return Response({"success": "Login successful.", "access_token": user.access_token})
+                        return Response({"success": "Login successful.", "access_token": user.access_token,"user_type": user.user_type})
                 except Exception as e:
                     # Token is invalid, so generate a new one
                     pass
@@ -198,7 +198,7 @@ def login_api(request):
                 user.access_token = str(access_token)
                 user.save()
 
-                return Response({"success": "Login successful.", "access_token": str(access_token)})
+                return Response({"success": "Login successful.", "access_token": str(access_token),"user_type":user.user_type})
             except Exception as e:
                 return Response({"error": "Error generating token: " + str(e)}, status=status.HTTP_401_UNAUTHORIZED)
 
