@@ -102,7 +102,7 @@ This Django project implements a REST API for managing restaurants, users, order
     {
       "username": "john_doe",
       "email": "john@example.com",
-      "user_type": "user",
+      "user_type": "customer",
       "name": "John Doe",
       "phone_number": "+1234567890",
       "address": "123 Main St, Springfield"
@@ -124,7 +124,7 @@ This Django project implements a REST API for managing restaurants, users, order
     {
       "username": "owner_jane",
       "email": "jane@example.com",
-      "user_type": "owner",
+      "user_type": "restaurant_owner",
       "name": "Jane Smith",
       "phone_number": "+1234567890",
       "address": "456 Elm St, Springfield",

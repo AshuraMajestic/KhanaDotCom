@@ -317,7 +317,7 @@ def send_activation_email(request, user):
 # Basic apis starts
 
 
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 @api_view(["GET"])
 def owner_profile_api(request):
     user = request.user
