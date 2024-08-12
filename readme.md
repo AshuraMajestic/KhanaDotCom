@@ -74,7 +74,7 @@ This Django project implements a REST API for managing restaurants, users, order
 - **Parameters:**
   - `email` (string, required)
   - `password` (string, required)
-- **Response:** Returns JSON with access token and sucess message or error message.
+- **Response:** Returns JSON with access token,user_type and sucess message or error message.
 
 #### 3. **Logout**
 - **URL:** `/logout/`
