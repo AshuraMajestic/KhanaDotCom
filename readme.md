@@ -253,27 +253,8 @@ This Django project implements a REST API for managing restaurants, users, order
   ```
 
 - **Response:** Returns Update successful message, or error messages.
-#### 11. **Update Details User**
-- **URL:** `/update-profile-user/`
-- **Method:** PUT
-- **Description:** Updates details of the currently authenticated customer
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
 
-- **Request Body:**
-
-  ```json
-  {
-   "username": "username",
-        "name": "name",
-        "phone_number": "1234567890",
-        "address": "address",
-  }
-  ```
-
-- **Response:** Returns Update successful message, or error messages.
-
-#### 12. **Delete User**
+#### 11. **Delete User**
 - **URL:** `/delete-user/<int:user_id>/`
 - **Method:** DELETE
 - **Description:** Soft Delete the user in database
@@ -282,7 +263,7 @@ This Django project implements a REST API for managing restaurants, users, order
 
 ## Password Reset Using Django Views and Templates
 
-### 13. Request Password Reset
+### 12. Request Password Reset
 
 - **URL:** `/password-reset/`
 - **Method:** POST
@@ -316,7 +297,7 @@ This Django project implements a REST API for managing restaurants, users, order
   ```
 
 
-#### 14. **Contact**
+#### 13. **Contact**
 - **URL:** `/contact/`
 - **Method:** POST
 - **Description:** Allows users to authenticate.
@@ -328,7 +309,7 @@ This Django project implements a REST API for managing restaurants, users, order
 
 ### Order Management
 
-#### 15. **Place Order**
+#### 14. **Place Order**
 - **URL:** `restaurants/<int:restaurant_id>/order/`
 - **Method:** POST
 - **Description:** Allows placing an order at a specific restaurant.
@@ -345,7 +326,7 @@ This Django project implements a REST API for managing restaurants, users, order
   ```
 - **Response:** Returns JSON with order details including order id and total amount.
 
-#### 16. **Order Confirmation**
+#### 15. **Order Confirmation**
 - **URL:** `/order/<order_id>/`
 - **Method:** POST
 - **Description:** Accept or reject a order by Restaurant owner.
@@ -356,7 +337,7 @@ This Django project implements a REST API for managing restaurants, users, order
   - `status` (string,required)
 - **Response:** Returns JSON with successfull acceptance or rejection message.
 
-#### 17. **Order Status**
+#### 16. **Order Status**
 - **URL:** `order/status/<str:order_id>/`
 - **Method:** GET
 - **Description:** Get Status of Order
@@ -366,7 +347,7 @@ This Django project implements a REST API for managing restaurants, users, order
   - `order_id` (string, required) in url
 - **Response:** Returns JSON with order id and status
 
-#### 18. **Start Preparing Order**
+#### 17. **Start Preparing Order**
 - **URL:** `order/<str:order_id>/prepare/`
 - **Method:** POST
 - **Description:** Start Preparing order and change status
@@ -376,7 +357,7 @@ This Django project implements a REST API for managing restaurants, users, order
   - `order_id` (string, required) in url
 - **Response:** Returns JSON with message or error
 
-#### 19. **Assign Order to Delivery Person**
+#### 18. **Assign Order to Delivery Person**
 - **URL:** `assign_order/<int:order_id>/`
 - **Method:** POST
 - **Description:** Assign a delivery person to a confirmed order.
@@ -420,7 +401,7 @@ Authorization: Bearer <your_access_token>
 
 
 
-#### 20. **Order History**
+#### 19. **Order History**
 - **URL:** `/orders/history/`
 - **Method:** GET
 - **Description:** Retrieves order history for the currently authenticated user.
@@ -435,7 +416,7 @@ Sure, I'll include example requests and responses for each API.
 
 ---
 
-#### **21. Add Restaurant API**
+#### **20. Add Restaurant API**
 
 **Endpoint:** `/add-restaurant/`  
 **Method:** `POST`  
@@ -457,7 +438,7 @@ This API endpoint allows restaurant owners to add a new restaurant to the system
 **Example Request:**
 
 ```http
-POST /api/add-restaurant/
+POST /add-restaurant/
 Authorization: Bearer <your_token>
 Content-Type: multipart/form-data
 
@@ -515,7 +496,7 @@ Content-Type: multipart/form-data
 
 ---
 
-#### **22. Add Menu Item API**
+#### **21. Add Menu Item API**
 
 **Endpoint:** `/add-menu-items/`  
 **Method:** `POST`  
@@ -536,7 +517,7 @@ This API endpoint allows authenticated restaurant owners to add a new menu item 
 **Example Request:**
 
 ```http
-POST /api/add-menu-item/
+POST /add-menu-item/
 Authorization: Bearer <your_token>
 Content-Type: multipart/form-data
 
@@ -584,4 +565,4 @@ Content-Type: multipart/form-data
 ```
 
 
-T Make sure to replace `<your_access_token>` placeholders with actual access tokens in your implementation. If you need further adjustments or have more questions, feel free to ask!
+Make sure to replace `<your_access_token>` placeholders with actual access tokens in your implementation. If you need further adjustments or have more questions, feel free to ask!

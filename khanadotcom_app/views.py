@@ -164,6 +164,7 @@ def signup_api(request):
 from datetime import datetime
 from rest_framework_simplejwt.tokens import AccessToken
 
+
 @csrf_exempt
 @api_view(["POST"])
 def login_api(request):
@@ -183,8 +184,14 @@ def login_api(request):
                 try:
                     # Decode the token to check its validity
                     access_token = AccessToken(user.access_token)
-                    if access_token['exp'] > datetime.now().timestamp():
-                        return Response({"success": "Login successful.", "access_token": user.access_token,"user_type": user.user_type})
+                    if access_token["exp"] > datetime.now().timestamp():
+                        return Response(
+                            {
+                                "success": "Login successful.",
+                                "access_token": user.access_token,
+                                "user_type": user.user_type,
+                            }
+                        )
                 except Exception as e:
                     # Token is invalid, so generate a new one
                     pass
@@ -198,15 +205,26 @@ def login_api(request):
                 user.access_token = str(access_token)
                 user.save()
 
-                return Response({"success": "Login successful.", "access_token": str(access_token),"user_type":user.user_type})
+                return Response(
+                    {
+                        "success": "Login successful.",
+                        "access_token": str(access_token),
+                        "user_type": user.user_type,
+                    }
+                )
             except Exception as e:
-                return Response({"error": "Error generating token: " + str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response(
+                    {"error": "Error generating token: " + str(e)},
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
 
         else:
             # Handle failed login attempts
             user = User.objects.filter(email=username).first()
             if user:
-                failed_attempt, created = FailedLoginAttempt.objects.get_or_create(user=user)
+                failed_attempt, created = FailedLoginAttempt.objects.get_or_create(
+                    user=user
+                )
                 failed_attempt.attempt_count += 1
                 failed_attempt.timestamp = timezone.now()
                 failed_attempt.save()
@@ -214,7 +232,9 @@ def login_api(request):
                 if failed_attempt.attempt_count >= 5:
                     send_password_reset_email(request, user)
                     return Response(
-                        {"error": "Too many failed login attempts. Password reset email has been sent."},
+                        {
+                            "error": "Too many failed login attempts. Password reset email has been sent."
+                        },
                         status=status.HTTP_403_FORBIDDEN,
                     )
 
@@ -321,7 +341,7 @@ def send_activation_email(request, user):
 @api_view(["GET"])
 def owner_profile_api(request):
     user = request.user
-    
+
     # Base user data
     data = {
         "user_id": user.user_id,
@@ -334,18 +354,19 @@ def owner_profile_api(request):
     }
     restaurant_owner = get_object_or_404(RestaurantOwner, user=user)
     data.update(
-            {
-                "aadhaar_card_number": restaurant_owner.aadhaar_card_number,
-            }
-        )
+        {
+            "aadhaar_card_number": restaurant_owner.aadhaar_card_number,
+        }
+    )
 
     return Response(data, status=status.HTTP_200_OK)
+
 
 @permission_classes([IsAuthenticated])
 @api_view(["GET"])
 def delivery_person_profile_api(request):
     user = request.user
-    
+
     # Base user data
     data = {
         "user_id": user.user_id,
@@ -358,21 +379,22 @@ def delivery_person_profile_api(request):
     }
     delivery_person = get_object_or_404(DeliveryPerson, user=user)
     data.update(
-            {
-                "aadhaar_card_number": delivery_person.aadhaar_card_number,
-                "vehicle_details": delivery_person.vehicle_details,
-                "availability_status":delivery_person.availability_status,
-                "rating":delivery_person.rating,
-            }
-        )
+        {
+            "aadhaar_card_number": delivery_person.aadhaar_card_number,
+            "vehicle_details": delivery_person.vehicle_details,
+            "availability_status": delivery_person.availability_status,
+            "rating": delivery_person.rating,
+        }
+    )
 
     return Response(data, status=status.HTTP_200_OK)
+
 
 @permission_classes([IsAuthenticated])
 @api_view(["GET"])
 def user_profile_api(request):
     user = request.user
-    
+
     # Base user data
     data = {
         "user_id": user.user_id,
@@ -392,15 +414,14 @@ def user_profile_api(request):
 def restaurant_list_api(request):
     restaurants = Restaurant.objects.all()
     data = [
-            {
-                "id": restaurant.restaurant_id,
-                "name": restaurant.name,
-                "image": restaurant.profile_pic.url,
-            }
-            for restaurant in restaurants
-        ]
+        {
+            "id": restaurant.restaurant_id,
+            "name": restaurant.name,
+            "image": restaurant.profile_pic.url,
+        }
+        for restaurant in restaurants
+    ]
     return Response(data)
-
 
 
 @permission_classes([IsAuthenticated])
@@ -454,10 +475,8 @@ def update_owner_profile_api(request):
         "address": request.data.get("address", user.address),
     }
     owner_data = {
-        "aadhaar_card_number":  restaurant_owner.aadhaar_card_number,
+        "aadhaar_card_number": restaurant_owner.aadhaar_card_number,
     }
-
-
 
     # Update user and owner information
     for attr, value in user_data.items():
@@ -467,7 +486,10 @@ def update_owner_profile_api(request):
         setattr(restaurant_owner, attr, value)
     restaurant_owner.save()
 
-    return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
+    return Response(
+        {"message": "Profile updated successfully"}, status=status.HTTP_200_OK
+    )
+
 
 @permission_classes([IsAuthenticated])
 @api_view(["PUT"])
@@ -487,9 +509,13 @@ def update_delivery_person_profile_api(request):
     # Update additional delivery person-specific data
     delivery_person_data = {
         "aadhaar_card_number": delivery_person.aadhaar_card_number,
-        "vehicle_details": request.data.get("vehicle_details", delivery_person.vehicle_details),
-        "availability_status": request.data.get("availability_status", delivery_person.availability_status),
-         "rating":delivery_person.rating,
+        "vehicle_details": request.data.get(
+            "vehicle_details", delivery_person.vehicle_details
+        ),
+        "availability_status": request.data.get(
+            "availability_status", delivery_person.availability_status
+        ),
+        "rating": delivery_person.rating,
     }
 
     # Update user and delivery person information
@@ -501,7 +527,10 @@ def update_delivery_person_profile_api(request):
         setattr(delivery_person, attr, value)
     delivery_person.save()
 
-    return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
+    return Response(
+        {"message": "Profile updated successfully"}, status=status.HTTP_200_OK
+    )
+
 
 @permission_classes([IsAuthenticated])
 @api_view(["PUT"])
@@ -522,7 +551,11 @@ def update_user_profile_api(request):
         setattr(user, attr, value)
     user.save()
 
-    return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
+    return Response(
+        {"message": "Profile updated successfully"}, status=status.HTTP_200_OK
+    )
+
+
 # Update Api Ends
 
 # Delete api  Starts
@@ -901,12 +934,11 @@ def order_history_api(request):
     return Response(serializer.data)
 
 
-
 @permission_classes([IsAuthenticated])
 @api_view(["POST"])
 def add_restaurant_api(request):
     user = request.user
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
             # Check if the user is a restaurant owner
             if user.user_type != "restaurant_owner":
@@ -916,25 +948,29 @@ def add_restaurant_api(request):
                 )
 
             data = request.data
-            name = data.get('name')
-            address = data.get('address')
-            phone_number = data.get('phone_number')
-            email = data.get('email')
-            description = data.get('description')
-            restaurant_GST = data.get('restaurant_GST')
-            profile_pic = request.FILES.get('profile_pic')
+            name = data.get("name")
+            address = data.get("address")
+            phone_number = data.get("phone_number")
+            email = data.get("email")
+            description = data.get("description")
+            restaurant_GST = data.get("restaurant_GST")
+            profile_pic = request.FILES.get("profile_pic")
 
             # Validate required fields
-            if not all([name, address, phone_number, email, description, restaurant_GST]):
-                return JsonResponse({'error': 'All fields are required.'}, status=400)
+            if not all(
+                [name, address, phone_number, email, description, restaurant_GST]
+            ):
+                return JsonResponse({"error": "All fields are required."}, status=400)
 
             # Ensure the restaurant owner's profile exists
             try:
                 owner = RestaurantOwner.objects.get(user=user)
                 owner = get_object_or_404(RestaurantOwner, restaurant_owner_id=9)
-                
+
             except RestaurantOwner.DoesNotExist:
-                return JsonResponse({'error': 'Restaurant owner profile not found.'}, status=404)
+                return JsonResponse(
+                    {"error": "Restaurant owner profile not found."}, status=404
+                )
 
             # Create restaurant
             restaurant = Restaurant.objects.create(
@@ -949,55 +985,74 @@ def add_restaurant_api(request):
 
             # Handle profile picture if provided
             if profile_pic:
-                ext = profile_pic.name.split('.')[-1]
-                new_image_name = f'{restaurant.restaurant_id}.{ext}'
+                ext = profile_pic.name.split(".")[-1]
+                new_image_name = f"{restaurant.restaurant_id}.{ext}"
                 profile_pic.name = new_image_name
                 restaurant.profile_pic.save(new_image_name, profile_pic)
 
-            return JsonResponse({'success': 'Restaurant created successfully.', 'restaurant_id': restaurant.restaurant_id}, status=201)
+            return JsonResponse(
+                {
+                    "success": "Restaurant created successfully.",
+                    "restaurant_id": restaurant.restaurant_id,
+                },
+                status=201,
+            )
 
         except Exception as e:
-            return JsonResponse({'error': f'Error: {str(e)}'}, status=500)
+            return JsonResponse({"error": f"Error: {str(e)}"}, status=500)
     else:
-        return JsonResponse({'error': 'Method not allowed.'}, status=405)
-    
-    
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
+
 @permission_classes([IsAuthenticated])
 @api_view(["POST"])
 def add_menu_item_api(request):
     user = request.user
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.data
-        name = data.get('name')
-        description = data.get('description')
-        price = data.get('price')
-        preparation_time = data.get('preparation_time')
-        menu_item_pic = request.FILES.get('menu_item_pic')
-        restaurant_id = data.get('restaurant_id')
-        if not all([name, description, price, preparation_time,restaurant_id]):
-                return JsonResponse({'error': 'All fields are required.'}, status=400)
+        name = data.get("name")
+        description = data.get("description")
+        price = data.get("price")
+        preparation_time = data.get("preparation_time")
+        menu_item_pic = request.FILES.get("menu_item_pic")
+        restaurant_id = data.get("restaurant_id")
+        if not all([name, description, price, preparation_time, restaurant_id]):
+            return JsonResponse({"error": "All fields are required."}, status=400)
         try:
             restaurant = get_object_or_404(Restaurant, restaurant_id=restaurant_id)
             if restaurant.owner.user != user:
-                return JsonResponse({'error': 'You are not authorized to add items to this restaurant.'}, status=403)
-            
+                return JsonResponse(
+                    {
+                        "error": "You are not authorized to add items to this restaurant."
+                    },
+                    status=403,
+                )
+
             menu = MenuItem.objects.create(
                 restaurant=restaurant,
                 name=name,
                 description=description,
                 price=price,
-                preparation_time=preparation_time
+                preparation_time=preparation_time,
             )
             if menu_item_pic:
-                ext = menu_item_pic.name.split('.')[-1]
-                new_image_name = f'{menu.menu_item_id}.{ext}'
+                ext = menu_item_pic.name.split(".")[-1]
+                new_image_name = f"{menu.menu_item_id}.{ext}"
                 menu_item_pic.name = new_image_name
                 menu.menu_item_pic.save(new_image_name, menu_item_pic)
-                
-            return JsonResponse({'success': 'Menu Item created successfully.', 'menu_item_id': menu.menu_item_id}, status=201)
-            
+
+            return JsonResponse(
+                {
+                    "success": "Menu Item created successfully.",
+                    "menu_item_id": menu.menu_item_id,
+                },
+                status=201,
+            )
+
         except Exception as e:
-            return JsonResponse({'error': f'Error: {str(e)}'}, status=500)
+            return JsonResponse({"error": f"Error: {str(e)}"}, status=500)
     else:
-        return JsonResponse({'error': 'Method not allowed.'}, status=405)
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
+
 # Adding ends for Owner
