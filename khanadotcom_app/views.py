@@ -418,6 +418,7 @@ def restaurant_list_api(request):
             "id": restaurant.restaurant_id,
             "name": restaurant.name,
             "image": restaurant.profile_pic.url,
+            "rating": restaurant.rating,
         }
         for restaurant in restaurants
     ]
@@ -431,8 +432,13 @@ def restaurant_detail_api(request, restaurant_id):
     data = {
         "id": restaurant.restaurant_id,
         "name": restaurant.name,
+        "rating": restaurant.rating,
         "description": restaurant.description,
         "image": restaurant.profile_pic.url,
+        "address": restaurant.address,
+        "phone_number": restaurant.phone_number,
+        "email": restaurant.email,
+        "restaurant_GST": restaurant.restaurant_GST,
     }
     return Response(data)
 

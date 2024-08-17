@@ -32,14 +32,14 @@ urlpatterns = [
         name="update_profile_delivery_person",
     ),
     path("delete-user/<int:user_id>/", views.delete_user_api, name="delete_user_api"),
-    path("restaurants/", views.restaurant_list_api, name="restaurant_list_api"),
+    path("api/restaurants/", views.restaurant_list_api, name="restaurant_list_api"),
     path(
-        "restaurants/<int:restaurant_id>/",
+        "api/restaurants/<int:restaurant_id>/",
         views.restaurant_detail_api,
         name="restaurant_detail_api",
     ),
     path(
-        "restaurants/<int:restaurant_id>/menu/",
+        "api/restaurants/<int:restaurant_id>/menu/",
         views.menu_items_api,
         name="menu_items_api",
     ),
