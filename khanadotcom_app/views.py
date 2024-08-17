@@ -958,7 +958,15 @@ def add_restaurant_api(request):
 
             # Validate required fields
             if not all(
-                [name, address, phone_number, email, description, restaurant_GST]
+                [
+                    name,
+                    address,
+                    phone_number,
+                    email,
+                    description,
+                    restaurant_GST,
+                    profile_pic,
+                ]
             ):
                 return JsonResponse({"error": "All fields are required."}, status=400)
 
@@ -1016,7 +1024,9 @@ def add_menu_item_api(request):
         preparation_time = data.get("preparation_time")
         menu_item_pic = request.FILES.get("menu_item_pic")
         restaurant_id = data.get("restaurant_id")
-        if not all([name, description, price, preparation_time, restaurant_id]):
+        if not all(
+            [name, description, price, preparation_time, restaurant_id, menu_item_pic]
+        ):
             return JsonResponse({"error": "All fields are required."}, status=400)
         try:
             restaurant = get_object_or_404(Restaurant, restaurant_id=restaurant_id)
