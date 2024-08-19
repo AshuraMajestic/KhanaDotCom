@@ -419,6 +419,7 @@ def restaurant_list_api(request):
             "name": restaurant.name,
             "image": restaurant.profile_pic.url,
             "rating": restaurant.rating,
+            "description": restaurant.description,
         }
         for restaurant in restaurants
     ]
