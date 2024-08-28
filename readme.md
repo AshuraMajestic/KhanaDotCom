@@ -525,7 +525,7 @@ Content-Type: multipart/form-data
   "name": "Truffle Risotto",
   "description": "Creamy risotto with truffle oil and mushrooms.",
   "price": 19.99,
-  "preparation_time": "20 minutes",
+  "preparation_time": "20",(In minutes)
   "menu_item_pic": (file: truffle_risotto.jpg),
   "restaurant_id": 1
 }

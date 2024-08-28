@@ -980,7 +980,9 @@ def add_restaurant_api(request):
             # Ensure the restaurant owner's profile exists
             try:
                 owner = RestaurantOwner.objects.get(user=user)
-                owner = get_object_or_404(RestaurantOwner, restaurant_owner_id=owner)
+                owner = get_object_or_404(
+                    RestaurantOwner, restaurant_owner_id=owner.restaurant_owner_id
+                )
 
             except RestaurantOwner.DoesNotExist:
                 return JsonResponse(
