@@ -455,6 +455,8 @@ def menu_items_api(request, restaurant_id):
             "price": item.price,
             "description": item.description,
             "image": item.menu_item_pic.url,
+            "availability": item.availability,
+            "rating": item.rating,
         }
         for item in menu_items
     ]
