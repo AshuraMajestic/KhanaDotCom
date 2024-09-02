@@ -308,27 +308,57 @@ def send_activation_email(request, user):
         raise  # Raise the exception to propagate it if needed
 
 
-# @csrf_exempt
-# @api_view(["POST"])
-# def generate_token(request):
-#     email = request.data.get("email")
-#     password = request.data.get("password")
-#     try:
-#         # Authenticate the user
-#         user = authenticate(email=email, password=password)
-#         if user is not None:
-#             # Generate tokens for the user
-#             refresh = RefreshToken.for_user(user)
-#             access_token = refresh.access_token
-#             token_data = {"refresh": str(refresh), "access": str(access_token)}
-#             return Response(token_data, status=status.HTTP_200_OK)
-#         else:
-#             return Response(
-#                 {"error": "Invalid email or password."},
-#                 status=status.HTTP_401_UNAUTHORIZED,
-#             )
-#     except Exception as e:
-#         return Response({"error": "Token Expired"}, status=status.HTTP_401_UNAUTHORIZED)
+@api_view(["POST"])
+def change_pass_api(request):
+    try:
+        user = request.user
+        data = request.data
+
+        # Retrieve passwords from the request data
+        current_password = data.get("current_password")
+        new_password = data.get("new_password")
+
+        # Check if the current password is provided
+        if not current_password:
+            return Response(
+                {"error": "Current password is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Authenticate the user with the current password
+        if not user.check_password(current_password):
+            return Response(
+                {"error": "Current password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Check if the new password is provided
+        if not new_password:
+            return Response(
+                {"error": "New password is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Validate the new password
+        try:
+            validate_password(new_password)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set the new password
+        user.set_password(new_password)
+        user.save()
+
+        return Response(
+            {"success": "Password has been changed successfully."},
+            status=status.HTTP_200_OK,
+        )
+
+    except Exception as e:
+        return Response(
+            {"error": "An error occurred: " + str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 # authentication ends
