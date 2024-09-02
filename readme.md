@@ -563,5 +563,36 @@ Content-Type: multipart/form-data
 }
 ```
 
+#### 22. **Change Password**
+- **URL:** `/change-password/`
+- **Method:** POST
+- **Description:** Allows authenticated users to change their password. Requires the current password for verification and a new password.
+- **Parameters:**
+  - `current_password` (string, required): The user's current password.
+  - `new_password` (string, required): The new password that the user wants to set.
+- **Response:** Returns JSON with a success message if the password is changed successfully, or an error message if the process fails.
+- **Authentication:** The user must be authenticated (e.g., via a session or a token).
+- **Example:**
+  ```json
+  {
+    "current_password": "old_password123",
+    "new_password": "NewPassword!456"
+  }
+  ```
+- **Response Examples:**
+  - **Success:**
+    ```json
+    {
+      "success": "Password has been changed successfully."
+    }
+    ```
+  - **Error:**
+    ```json
+    {
+      "error": "Current password is incorrect."
+    }
+    ```
+
+---
 
 Make sure to replace `<your_access_token>` placeholders with actual access tokens in your implementation. If you need further adjustments or have more questions, feel free to ask!
