@@ -109,9 +109,7 @@ class Restaurant(models.Model):
     email = models.EmailField()
     profile_pic = models.ImageField(upload_to="restaurant_logo/", null=True, blank=True)
     description = models.TextField(blank=True, null=True)
-    rating = models.DecimalField(
-        max_digits=3, decimal_places=2, default=0.00, blank=True, null=True
-    )
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     restaurant_GST = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -130,7 +128,7 @@ class DeliveryPerson(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     vehicle_details = models.CharField(max_length=255, blank=True, null=True)
     availability_status = models.BooleanField(default=True)
-    rating = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     aadhaar_card_number = models.CharField(
         max_length=12, unique=True, blank=False, null=False
     )
@@ -155,9 +153,7 @@ class MenuItem(models.Model):
     availability = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    rating = models.DecimalField(
-        max_digits=3, decimal_places=2, default=0.00, blank=True, null=True
-    )
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
     preparation_time = models.IntegerField(
         help_text="Preparation time in minutes", blank=True, null=True
     )

@@ -165,12 +165,11 @@ This Django project implements a REST API for managing restaurants, users, order
 - **URL:** `/api/restaurants/`
 - **Method:** GET
 - **Description:** Retrieves a list of all restaurants.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
+
 - **Response:** Returns JSON array of restaurant objects with id and name.
 
 #### 6. **Restaurant Detail**
-- **URL:** `/api/restaurant/<restaurant_id>/`
+- **URL:** `/api/restaurants/<restaurant_id>/`
 - **Method:** GET
 - **Description:** Retrieves details of a specific restaurant.
 - **Authorization:** Bearer Token (required)
