@@ -439,7 +439,6 @@ def user_profile_api(request):
     return Response(data, status=status.HTTP_200_OK)
 
 
-@permission_classes([IsAuthenticated])
 @api_view(["GET"])
 def restaurant_list_api(request):
     restaurants = Restaurant.objects.all()
@@ -456,7 +455,6 @@ def restaurant_list_api(request):
     return Response(data)
 
 
-@permission_classes([IsAuthenticated])
 @api_view(["GET"])
 def restaurant_detail_api(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
@@ -474,19 +472,42 @@ def restaurant_detail_api(request, restaurant_id):
     return Response(data)
 
 
-@permission_classes([IsAuthenticated])
 @api_view(["GET"])
-def menu_items_api(request, restaurant_id):
+def menu_items_api_by_restaurant(request, restaurant_id):
     menu_items = MenuItem.objects.filter(restaurant_id=restaurant_id)
     data = [
         {
             "id": item.menu_item_id,
             "name": item.name,
+            "restaurant": item.restaurant.name,
+            "restaurant_id": item.restaurant.restaurant_id,
             "price": item.price,
             "description": item.description,
             "image": item.menu_item_pic.url,
             "availability": item.availability,
             "rating": item.rating,
+            "preparation_time": item.preparation_time,
+        }
+        for item in menu_items
+    ]
+    return Response(data)
+
+
+@api_view(["GET"])
+def menu_items_api(request):
+    menu_items = MenuItem.objects.all()
+    data = [
+        {
+            "id": item.menu_item_id,
+            "name": item.name,
+            "restaurant": item.restaurant.name,
+            "restaurant_id": item.restaurant.restaurant_id,
+            "price": item.price,
+            "description": item.description,
+            "image": item.menu_item_pic.url,
+            "availability": item.availability,
+            "rating": item.rating,
+            "preparation_time": item.preparation_time,
         }
         for item in menu_items
     ]
@@ -787,24 +808,24 @@ def contact_us(request):
 # @permission_classes([IsAuthenticated])
 def order_placement_api(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
-
+    user = request.user
     if request.method == "POST":
         data = request.data
 
         # Extract data from request body
-        delivery_address = data.get("delivery_address")
+        delivery_address = user.address
         items = data.get("items", [])
 
         # Validate data presence
-        if not (delivery_address and items):
+        if not (items):
             return Response(
-                {"error": "Delivery address and items are required fields."},
+                {"error": "items are required fields."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         # Create Order object
         order = Order.objects.create(
-            user=request.user,  # Assuming user is authenticated
+            user=user,
             delivery_address=delivery_address,
             total_amount=0,  # Placeholder for total amount
         )
@@ -812,9 +833,9 @@ def order_placement_api(request, restaurant_id):
         # Process each selected menu item
         total_amount = 0
 
-        for item_id in items:
-            menu_item = get_object_or_404(MenuItem, pk=item_id)
-            quantity = 1  # For simplicity, assuming quantity is always 1
+        for item in items:
+            menu_item = get_object_or_404(MenuItem, pk=item.item_id)
+            quantity = item.quantity
             OrderItem.objects.create(
                 order=order,
                 menu_item=menu_item,
@@ -1107,3 +1128,8 @@ def add_menu_item_api(request):
 
 
 # Adding ends for Owner
+
+# Rating apis
+
+
+# Rating end

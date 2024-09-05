@@ -165,15 +165,12 @@ This Django project implements a REST API for managing restaurants, users, order
 - **URL:** `/api/restaurants/`
 - **Method:** GET
 - **Description:** Retrieves a list of all restaurants.
-
 - **Response:** Returns JSON array of restaurant objects with id and name.
 
 #### 6. **Restaurant Detail**
 - **URL:** `/api/restaurants/<restaurant_id>/`
 - **Method:** GET
 - **Description:** Retrieves details of a specific restaurant.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Parameters:**
   - `restaurant_id` (integer, required)
 - **Response:** Returns JSON object with restaurant id, name, description and image.
@@ -182,11 +179,25 @@ This Django project implements a REST API for managing restaurants, users, order
 - **URL:** `/api/restaurants/<restaurant_id>/menu/`
 - **Method:** GET
 - **Description:** Retrieves menu items for a specific restaurant.
-- **Authorization:** Bearer Token (required)
-  - Example: `'Authorization':'Bearer <your_access_token>'`
 - **Parameters:**
   - `restaurant_id` (integer, required)
-- **Response:** Returns JSON array of menu item objects with id, name,description,image and price.
+- **Response:** Returns JSON array of menu item objects with id, name,description,image, restaurant,restaurant_id,availabilty,rating,preparation and price.
+
+#### 7. **Menu Items**
+- **URL:** `/api/menu/`
+- **Method:** GET
+- **Description:** Retrieves all menu items.
+- **Parameters:**
+  - None
+- **Response:** Returns JSON array of menu item objects with id, name,description,image, restaurant,restaurant_id,availabilty,rating,preparation and price.
+"restaurant": "White Bricks",
+"restaurant_id": 23,
+"price": 500.0,
+"description": "Pizza with lots of cheez and cold drink",
+"image": "/media/menu_items/25.png",
+"availability": true,
+"rating": 0.0,
+"preparation_time": 20
 
 
 ### Update User Details
@@ -319,8 +330,16 @@ This Django project implements a REST API for managing restaurants, users, order
 - **Request Body:**
   ```json
   {
-      "delivery_address": "string",
-      "items": [item_id1, item_id2, ...]
+    "items": [
+      {
+        "item_id": 1,
+        "quantity": 2
+      },
+      {
+        "item_id": 5,
+        "quantity": 1
+      }
+    ]
   }
   ```
 - **Response:** Returns JSON with order details including order id and total amount.
@@ -397,7 +416,6 @@ Authorization: Bearer <your_access_token>
     "message": "No available delivery person."
   }
   ```
-
 
 
 #### 19. **Order History**
@@ -592,6 +610,13 @@ Content-Type: multipart/form-data
       "error": "Current password is incorrect."
     }
     ```
+
+
+### Rating Api
+
+#### 23. **Rate restaurant**
+
+
 
 ---
 

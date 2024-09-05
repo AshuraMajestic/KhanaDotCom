@@ -41,6 +41,11 @@ urlpatterns = [
     ),
     path(
         "api/restaurants/<int:restaurant_id>/menu/",
+        views.menu_items_api_by_restaurant,
+        name="menu_items_by_restaurant_api",
+    ),
+    path(
+        "api/menu/",
         views.menu_items_api,
         name="menu_items_api",
     ),
@@ -63,6 +68,11 @@ urlpatterns = [
         "order/<int:order_id>/prepare/",
         views.update_order_status_to_preparing,
         name="update_order_status_to_preparing",
+    ),
+    path(
+        "order/user/",
+        views.see_all_user_order,
+        name="see_all_user_order",
     ),
     path(
         "assign_order/<int:order_id>/",
