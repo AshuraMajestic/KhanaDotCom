@@ -70,11 +70,6 @@ urlpatterns = [
         name="update_order_status_to_preparing",
     ),
     path(
-        "order/user/",
-        views.see_all_user_order,
-        name="see_all_user_order",
-    ),
-    path(
         "assign_order/<int:order_id>/",
         views.assign_order_to_delivery_person,
         name="assign_order",

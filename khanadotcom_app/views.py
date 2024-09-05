@@ -827,15 +827,15 @@ def order_placement_api(request, restaurant_id):
         order = Order.objects.create(
             user=user,
             delivery_address=delivery_address,
-            total_amount=0,  # Placeholder for total amount
+            total_amount=0,
         )
 
         # Process each selected menu item
         total_amount = 0
 
         for item in items:
-            menu_item = get_object_or_404(MenuItem, pk=item.item_id)
-            quantity = item.quantity
+            menu_item = get_object_or_404(MenuItem, pk=item["item_id"])
+            quantity = item["quantity"]
             OrderItem.objects.create(
                 order=order,
                 menu_item=menu_item,
