@@ -332,11 +332,11 @@ This Django project implements a REST API for managing restaurants, users, order
   {
     "items": [
       {
-        "item_id": 1,
+        "item_id": 1(menu_item_id),
         "quantity": 2
       },
       {
-        "item_id": 5,
+        "item_id": 5(menu_item_id),
         "quantity": 1
       }
     ]
