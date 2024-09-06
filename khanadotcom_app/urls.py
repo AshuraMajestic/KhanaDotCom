@@ -83,4 +83,9 @@ urlpatterns = [
         name="password_reset_confirm",
     ),
     path("contact/", views.contact_us, name="contact_us"),
+    path(
+        "restaurants/<int:restaurant_id>/rate/",
+        views.rate_restaurant_api,
+        name="rate_restaurant",
+    ),
 ]

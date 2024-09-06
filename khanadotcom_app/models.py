@@ -355,6 +355,39 @@ class Coupon(models.Model):
         managed = False
 
 
+class Rating(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": "customer"},
+    )
+    restaurant_rate = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name="restaurant_ratings",
+        null=True,
+        blank=True,
+    )
+    menu_item_rate = models.ForeignKey(
+        MenuItem,
+        on_delete=models.CASCADE,
+        related_name="menu_item_ratings",
+        null=True,
+        blank=True,
+    )
+    rating = models.DecimalField(max_digits=3, decimal_places=2)
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Rating by {self.user.name} - {self.rating}"
+
+    class Meta:
+        db_table = "rating"
+        managed = True
+
+
 # class SMSLogs(models.Model):
 #     mobile_no_validator = RegexValidator(
 #         regex=r"^\d{4,11}$",  # Example: 4 to 11 digits

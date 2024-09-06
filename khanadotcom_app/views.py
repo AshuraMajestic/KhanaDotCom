@@ -37,6 +37,7 @@ from .models import (
     FailedLoginAttempt,
     EmailsLogs,
     ContactMessage,
+    Rating,
 )
 
 
@@ -1132,6 +1133,89 @@ def add_menu_item_api(request):
 # Adding ends for Owner
 
 # Rating apis
+
+from django.db.models import Avg
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def rate_restaurant_api(request, restaurant_id):
+    user = request.user
+
+    # Check if the user is a customer
+    if user.user_type != "customer":
+        return JsonResponse(
+            {"error": "Only customers can rate restaurants."}, status=403
+        )
+
+    if request.method == "POST":
+        data = request.data
+        rating_value = data.get("rating")
+        comment = data.get("comment")
+
+        # Validate rating value and restaurant_id
+        if not all([restaurant_id, rating_value]):
+            return JsonResponse(
+                {"error": "Restaurant ID and rating value are required."}, status=400
+            )
+
+        try:
+            rating_value = float(rating_value)
+            if rating_value < 1 or rating_value > 5:
+                return JsonResponse(
+                    {"error": "Rating value must be between 1 and 5."}, status=400
+                )
+        except ValueError:
+            return JsonResponse({"error": "Invalid rating value."}, status=400)
+
+        # Get the restaurant
+        restaurant = get_object_or_404(Restaurant, restaurant_id=restaurant_id)
+
+        try:
+            # Check if the user has already rated this restaurant
+            existing_rating = Rating.objects.filter(
+                user=user, restaurant_rate=restaurant
+            ).first()
+
+            if existing_rating:
+                # Update the existing rating
+                existing_rating.rating = rating_value
+                existing_rating.comment = comment
+                existing_rating.save()
+                message = "Rating updated successfully."
+            else:
+                # Create a new rating
+                Rating.objects.create(
+                    user=user,
+                    restaurant_rate=restaurant,
+                    rating=rating_value,
+                    comment=comment,
+                )
+                message = "Rating submitted successfully."
+
+            # Calculate the new average rating for the restaurant
+            avg_rating = Rating.objects.filter(restaurant_rate=restaurant).aggregate(
+                Avg("rating")
+            )["rating__avg"]
+            restaurant.rating = round(
+                avg_rating, 2
+            )  # Update the restaurant's rating with the new average
+            restaurant.save()
+
+            return JsonResponse(
+                {
+                    "success": message,
+                    "new_rating": rating_value,
+                    "restaurant_average_rating": restaurant.rating,
+                },
+                status=200,
+            )
+
+        except Exception as e:
+            return JsonResponse({"error": f"Error: {str(e)}"}, status=500)
+
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
 
 
 # Rating end
