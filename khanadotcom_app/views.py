@@ -862,6 +862,7 @@ def order_placement_api(request, restaurant_id):
             {
                 "success": "Order placed successfully.",
                 "user_id": user.user_id,
+                "restaurant_id": restaurant.restaurant_id,
                 "order_id": order.order_id,
                 "total_amount": order.total_amount,
             },
