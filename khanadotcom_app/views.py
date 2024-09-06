@@ -37,7 +37,7 @@ from .models import (
     FailedLoginAttempt,
     EmailsLogs,
     ContactMessage,
-    Rating,
+    Review,
 )
 
 
@@ -1173,8 +1173,8 @@ def rate_restaurant_api(request, restaurant_id):
 
         try:
             # Check if the user has already rated this restaurant
-            existing_rating = Rating.objects.filter(
-                user=user, restaurant_rate=restaurant
+            existing_rating = Review.objects.filter(
+                user=user, restaurant=restaurant
             ).first()
 
             if existing_rating:
@@ -1185,16 +1185,16 @@ def rate_restaurant_api(request, restaurant_id):
                 message = "Rating updated successfully."
             else:
                 # Create a new rating
-                Rating.objects.create(
+                Review.objects.create(
                     user=user,
-                    restaurant_rate=restaurant,
+                    restaurant=restaurant,
                     rating=rating_value,
                     comment=comment,
                 )
                 message = "Rating submitted successfully."
 
             # Calculate the new average rating for the restaurant
-            avg_rating = Rating.objects.filter(restaurant_rate=restaurant).aggregate(
+            avg_rating = Review.objects.filter(restaurant=restaurant).aggregate(
                 Avg("rating")
             )["rating__avg"]
             restaurant.rating = round(

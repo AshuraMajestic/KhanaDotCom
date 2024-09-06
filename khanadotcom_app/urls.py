@@ -88,4 +88,9 @@ urlpatterns = [
         views.rate_restaurant_api,
         name="rate_restaurant",
     ),
+    # path(
+    #     "restaurants/<int:restaurant_id>/menu/<int:menu_item_id>/rate",
+    #     views.rate_restaurant_api,
+    #     name="rate_restaurant",
+    # ),
 ]

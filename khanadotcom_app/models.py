@@ -265,12 +265,17 @@ class Payment(models.Model):
 
 class Review(models.Model):
     review_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={"user_type": "customer"},
+    )
     restaurant = models.ForeignKey(
         Restaurant, on_delete=models.CASCADE, blank=True, null=True
     )
-    customer = models.ForeignKey(
-        CustomerDetail, on_delete=models.CASCADE, related_name="reviews"
+    menu_item = models.ForeignKey(
+        MenuItem, on_delete=models.CASCADE, blank=True, null=True
     )
     delivery_person = models.ForeignKey(
         DeliveryPerson, on_delete=models.CASCADE, blank=True, null=True
@@ -353,39 +358,6 @@ class Coupon(models.Model):
     class Meta:
         db_table = "coupon"
         managed = False
-
-
-class Rating(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        limit_choices_to={"user_type": "customer"},
-    )
-    restaurant_rate = models.ForeignKey(
-        Restaurant,
-        on_delete=models.CASCADE,
-        related_name="restaurant_ratings",
-        null=True,
-        blank=True,
-    )
-    menu_item_rate = models.ForeignKey(
-        MenuItem,
-        on_delete=models.CASCADE,
-        related_name="menu_item_ratings",
-        null=True,
-        blank=True,
-    )
-    rating = models.DecimalField(max_digits=3, decimal_places=2)
-    comment = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"Rating by {self.user.name} - {self.rating}"
-
-    class Meta:
-        db_table = "rating"
-        managed = True
 
 
 # class SMSLogs(models.Model):

@@ -17,7 +17,6 @@ from .models import (
     Notification,
     EmailsLogs,
     ContactMessage,
-    Rating,
 )
 
 # Register your models here
@@ -85,4 +84,3 @@ admin.site.register(MenuItemCategory)
 admin.site.register(Notification)
 admin.site.register(EmailsLogs)
 admin.site.register(ContactMessage)
-admin.site.register(Rating)
