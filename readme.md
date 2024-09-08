@@ -612,9 +612,171 @@ Content-Type: multipart/form-data
     ```
 
 
-### Rating Api
+### **Rating API Documentation**
 
-#### 23. **Rate restaurant**
+#### 23. **Rate Restaurant API**
+
+**Endpoint:** `/restaurants/<int:restaurant_id>/rate`  
+**Method:** `POST`  
+**Permissions Required:** Authentication (Only accessible to authenticated users of type 'customer')  
+
+**Description:**  
+This API allows authenticated customers to rate a restaurant. A customer can provide a rating between 1 and 5, along with an optional comment. If a customer has already rated the restaurant, they can update their existing rating.
+
+**Request Parameters:**
+
+- **rating** (float): The rating value for the restaurant (Required, must be between 1 and 5).
+- **comment** (string): An optional comment about the restaurant.
+
+**Example Request:**
+
+```http
+POST /restaurants/<int:restaurant_id>/rate/
+Authorization: Bearer <your_token>
+Content-Type: application/json
+
+{
+  "rating": 4.5,
+  "comment": "Great food and service!"
+}
+```
+
+**Example Response (Success):**
+
+```json
+{
+  "success": "Rating submitted successfully.",
+  "new_rating": 4.5,
+  "restaurant_average_rating": 4.3
+}
+```
+
+**Example Response (Error - Unauthorized):**
+
+```json
+{
+  "error": "Only customers can rate restaurants."
+}
+```
+
+**Example Response (Error - Invalid Rating Value):**
+
+```json
+{
+  "error": "Rating value must be between 1 and 5."
+}
+```
+
+---
+
+#### 24. **Rate Menu Item API**
+
+**Endpoint:** `/menu/<int:menu_item_id>/rate`  
+**Method:** `POST`  
+**Permissions Required:** Authentication (Only accessible to authenticated users of type 'customer')  
+
+**Description:**  
+This API allows authenticated customers to rate a specific menu item. A customer can provide a rating between 1 and 5, along with an optional comment. If a customer has already rated the menu item, they can update their existing rating.
+
+**Request Parameters:**
+
+- **rating** (float): The rating value for the menu item (Required, must be between 1 and 5).
+- **comment** (string): An optional comment about the menu item.
+
+**Example Request:**
+
+```http
+POST /menu/<int:menu_item_id>/rate
+Authorization: Bearer <your_token>
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "comment": "Best risotto I've ever had!"
+}
+```
+
+**Example Response (Success):**
+
+```json
+{
+  "success": "Rating submitted successfully.",
+  "new_rating": 5,
+  "menu_item_average_rating": 4.8
+}
+```
+
+**Example Response (Error - Unauthorized):**
+
+```json
+{
+  "error": "Only customers can rate menu items."
+}
+```
+
+**Example Response (Error - Invalid Rating Value):**
+
+```json
+{
+  "error": "Rating value must be between 1 and 5."
+}
+```
+
+---
+
+#### 25. **Rate Delivery Person API**
+
+**Endpoint:** `delivery-person/<int:delivery_person_id>/rate`  
+**Method:** `POST`  
+**Permissions Required:** Authentication (Only accessible to authenticated users of type 'customer')  
+
+**Description:**  
+This API allows authenticated customers to rate a delivery person. A customer can provide a rating between 1 and 5, along with an optional comment. If a customer has already rated the delivery person, they can update their existing rating.
+
+**Request Parameters:**
+
+- **rating** (float): The rating value for the delivery person (Required, must be between 1 and 5).
+- **comment** (string): An optional comment about the delivery person.
+
+**Example Request:**
+
+```http
+POST /delivery-person/<int:delivery_person_id>/rate
+Authorization: Bearer <your_token>
+Content-Type: application/json
+
+{
+  "rating": 4.8,
+  "comment": "Quick and polite service!"
+}
+```
+
+**Example Response (Success):**
+
+```json
+{
+  "success": "Rating submitted successfully.",
+  "new_rating": 4.8,
+  "delivery_person_average_rating": 4.6
+}
+```
+
+**Example Response (Error - Unauthorized):**
+
+```json
+{
+  "error": "Only customers can rate delivery persons."
+}
+```
+
+**Example Response (Error - Invalid Rating Value):**
+
+```json
+{
+  "error": "Rating value must be between 1 and 5."
+}
+```
+
 
 
 

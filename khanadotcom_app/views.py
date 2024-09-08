@@ -1218,4 +1218,167 @@ def rate_restaurant_api(request, restaurant_id):
         return JsonResponse({"error": "Method not allowed."}, status=405)
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def rate_menu_item_api(request, menu_item_id):
+    user = request.user
+
+    # Check if the user is a customer
+    if user.user_type != "customer":
+        return JsonResponse(
+            {"error": "Only customers can rate menu items."}, status=403
+        )
+
+    if request.method == "POST":
+        data = request.data
+        rating_value = data.get("rating")
+        comment = data.get("comment")
+
+        # Validate rating value and menu_item_id
+        if not all([menu_item_id, rating_value]):
+            return JsonResponse(
+                {"error": "Menu item ID and rating value are required."}, status=400
+            )
+
+        try:
+            rating_value = float(rating_value)
+            if rating_value < 1 or rating_value > 5:
+                return JsonResponse(
+                    {"error": "Rating value must be between 1 and 5."}, status=400
+                )
+        except ValueError:
+            return JsonResponse({"error": "Invalid rating value."}, status=400)
+
+        # Get the menu item
+        menu_item = get_object_or_404(MenuItem, pk=menu_item_id)
+
+        try:
+            # Check if the user has already rated this menu item
+            existing_rating = Review.objects.filter(
+                user=user, menu_item=menu_item
+            ).first()
+
+            if existing_rating:
+                # Update the existing rating
+                existing_rating.rating = rating_value
+                existing_rating.comment = comment
+                existing_rating.save()
+                message = "Rating updated successfully."
+            else:
+                # Create a new rating
+                Review.objects.create(
+                    user=user,
+                    menu_item=menu_item,
+                    rating=rating_value,
+                    comment=comment,
+                )
+                message = "Rating submitted successfully."
+
+            # Calculate the new average rating for the menu item
+            avg_rating = Review.objects.filter(menu_item=menu_item).aggregate(
+                Avg("rating")
+            )["rating__avg"]
+            menu_item.rating = round(
+                avg_rating, 2
+            )  # Update the menu item's rating with the new average
+            menu_item.save()
+
+            return JsonResponse(
+                {
+                    "success": message,
+                    "new_rating": rating_value,
+                    "menu_item_average_rating": menu_item.rating,
+                },
+                status=200,
+            )
+
+        except Exception as e:
+            return JsonResponse({"error": f"Error: {str(e)}"}, status=500)
+
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def rate_delivery_person_api(request, delivery_person_id):
+    user = request.user
+
+    # Check if the user is a customer
+    if user.user_type != "customer":
+        return JsonResponse(
+            {"error": "Only customers can rate delivery persons."}, status=403
+        )
+
+    if request.method == "POST":
+        data = request.data
+        rating_value = data.get("rating")
+        comment = data.get("comment")
+
+        # Validate rating value and delivery_person_id
+        if not all([delivery_person_id, rating_value]):
+            return JsonResponse(
+                {"error": "Delivery person ID and rating value are required."},
+                status=400,
+            )
+
+        try:
+            rating_value = float(rating_value)
+            if rating_value < 1 or rating_value > 5:
+                return JsonResponse(
+                    {"error": "Rating value must be between 1 and 5."}, status=400
+                )
+        except ValueError:
+            return JsonResponse({"error": "Invalid rating value."}, status=400)
+
+        # Get the delivery person
+        delivery_person = get_object_or_404(DeliveryPerson, pk=delivery_person_id)
+
+        try:
+            # Check if the user has already rated this delivery person
+            existing_rating = Review.objects.filter(
+                user=user, delivery_person=delivery_person
+            ).first()
+
+            if existing_rating:
+                # Update the existing rating
+                existing_rating.rating = rating_value
+                existing_rating.comment = comment
+                existing_rating.save()
+                message = "Rating updated successfully."
+            else:
+                # Create a new rating
+                Review.objects.create(
+                    user=user,
+                    delivery_person=delivery_person,
+                    rating=rating_value,
+                    comment=comment,
+                )
+                message = "Rating submitted successfully."
+
+            # Calculate the new average rating for the delivery person
+            avg_rating = Review.objects.filter(
+                delivery_person=delivery_person
+            ).aggregate(Avg("rating"))["rating__avg"]
+            delivery_person.rating = round(
+                avg_rating, 2
+            )  # Update the delivery person's rating with the new average
+            delivery_person.save()
+
+            return JsonResponse(
+                {
+                    "success": message,
+                    "new_rating": rating_value,
+                    "delivery_person_average_rating": delivery_person.rating,
+                },
+                status=200,
+            )
+
+        except Exception as e:
+            return JsonResponse({"error": f"Error: {str(e)}"}, status=500)
+
+    else:
+        return JsonResponse({"error": "Method not allowed."}, status=405)
+
+
 # Rating end
