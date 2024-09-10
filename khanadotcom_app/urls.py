@@ -25,13 +25,16 @@ urlpatterns = [
         views.update_owner_profile_api,
         name="update_profile_owner",
     ),
-    path("add-restaurant/", views.add_restaurant_api, name="add_restaurant"),
-    path("add-menu-items/", views.add_menu_item_api, name="add_menu_item"),
+    path(
+        "edit-user-picture/", views.update_profile_picture_api, name="edit_user_picture"
+    ),
     path(
         "update-profile-delivery-person/",
         views.update_delivery_person_profile_api,
         name="update_profile_delivery_person",
     ),
+    path("add-restaurant/", views.add_restaurant_api, name="add_restaurant"),
+    path("add-menu-items/", views.add_menu_item_api, name="add_menu_item"),
     path("delete-user/<int:user_id>/", views.delete_user_api, name="delete_user_api"),
     path("api/restaurants/", views.restaurant_list_api, name="restaurant_list_api"),
     path(

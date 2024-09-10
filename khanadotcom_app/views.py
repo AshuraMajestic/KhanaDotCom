@@ -372,6 +372,10 @@ def change_pass_api(request):
 @api_view(["GET"])
 def owner_profile_api(request):
     user = request.user
+    profile_picture_url = None
+    if user.profile_picture:
+        if user.profile_picture.url:
+            profile_picture_url = user.profile_picture.url
 
     # Base user data
     data = {
@@ -382,6 +386,7 @@ def owner_profile_api(request):
         "name": user.name,
         "phone_number": user.phone_number,
         "address": user.address,
+        "profile_picture": profile_picture_url,
     }
     restaurant_owner = get_object_or_404(RestaurantOwner, user=user)
     data.update(
@@ -397,7 +402,10 @@ def owner_profile_api(request):
 @api_view(["GET"])
 def delivery_person_profile_api(request):
     user = request.user
-
+    profile_picture_url = None
+    if user.profile_picture:
+        if user.profile_picture.url:
+            profile_picture_url = user.profile_picture.url
     # Base user data
     data = {
         "user_id": user.user_id,
@@ -407,6 +415,7 @@ def delivery_person_profile_api(request):
         "name": user.name,
         "phone_number": user.phone_number,
         "address": user.address,
+        "profile_picture": profile_picture_url,
     }
     delivery_person = get_object_or_404(DeliveryPerson, user=user)
     data.update(
@@ -425,7 +434,10 @@ def delivery_person_profile_api(request):
 @api_view(["GET"])
 def user_profile_api(request):
     user = request.user
-
+    profile_picture_url = None
+    if user.profile_picture:
+        if user.profile_picture.url:
+            profile_picture_url = user.profile_picture.url
     # Base user data
     data = {
         "user_id": user.user_id,
@@ -435,6 +447,7 @@ def user_profile_api(request):
         "name": user.name,
         "phone_number": user.phone_number,
         "address": user.address,
+        "profile_picture": profile_picture_url,
     }
 
     return Response(data, status=status.HTTP_200_OK)
@@ -519,6 +532,27 @@ def menu_items_api(request):
 
 
 # Update Api Starts
+
+
+@permission_classes([IsAuthenticated])
+@api_view(["PUT"])
+def update_profile_picture_api(request):
+    user = request.user
+
+    if "profile_picture" not in request.FILES:
+        return Response(
+            {"error": "No image file provided."}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    profile_picture = request.FILES["profile_picture"]
+
+    # Update user's profile picture
+    user.profile_picture = profile_picture
+    user.save()
+
+    return Response(
+        {"message": "Profile picture updated successfully"}, status=status.HTTP_200_OK
+    )
 
 
 @permission_classes([IsAuthenticated])

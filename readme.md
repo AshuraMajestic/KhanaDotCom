@@ -106,6 +106,7 @@ This Django project implements a REST API for managing restaurants, users, order
       "name": "John Doe",
       "phone_number": "+1234567890",
       "address": "123 Main St, Springfield"
+      "profile-picture":null || "/media/profile_p[ictur.png]"
     }
     ```
 
@@ -129,6 +130,7 @@ This Django project implements a REST API for managing restaurants, users, order
       "phone_number": "+1234567890",
       "address": "456 Elm St, Springfield",
       "aadhaar_card_number": "1234-5678-9012"
+      "profile-picture":null || "/media/profile_p[ictur.png]"
     }
     ```
 
@@ -154,6 +156,7 @@ This Django project implements a REST API for managing restaurants, users, order
       "aadhaar_card_number": "5678-1234-9012",
       "vehicle_details": "Bike - XYZ123",
       "availability_status": "Available",
+      "profile-picture":null || "/media/profile_p[ictur.png]"
       "rating": 4.8
     }
     ```
@@ -774,6 +777,55 @@ Content-Type: application/json
 ```json
 {
   "error": "Rating value must be between 1 and 5."
+}
+```
+
+#### 26. **Update Profile Picture API**
+
+**Endpoint:** `/edit-user-picture/`  
+**Method:** `PUT`  
+**Permissions Required:** Authentication (Only accessible to authenticated users)
+
+**Description:**  
+This API allows authenticated users to update their profile picture by uploading a new image file. The uploaded file replaces the current profile picture associated with the user's account.
+
+**Request Parameters:**
+
+- **profile_picture** (file): The image file to be uploaded as the new profile picture (Required).
+
+**Example Request:**
+
+```http
+PUT /api/user/update-profile-picture/
+Authorization: Bearer <your_token>
+Content-Type: multipart/form-data
+
+{
+  "profile_picture": <file>
+}
+```
+
+**Example Response (Success):**
+
+```json
+{
+  "message": "Profile picture updated successfully."
+}
+```
+
+**Example Response (Error - No Image Provided):**
+
+```json
+{
+  "error": "No image file provided."
+}
+```
+
+**Example Response (Error - Unauthorized):**
+
+```json
+{
+  "detail": "Authentication credentials were not provided."
 }
 ```
 
